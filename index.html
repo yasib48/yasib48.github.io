@@ -77,7 +77,6 @@
             <div class="flex items-center gap-6">
                 <a href="#about" class="text-sm font-medium hover:text-gray-500 transition-colors">About</a>
                 <a href="#projects" class="text-sm font-medium hover:text-gray-500 transition-colors">Projects</a>
-                <button onclick="toggleAdmin()" class="text-sm font-medium text-gray-400 hover:text-black transition-colors">Admin</button>
             </div>
         </div>
     </nav>
@@ -814,15 +813,56 @@
             mainMedia.innerHTML = `<img src="${url}" alt="Screenshot" class="w-full h-full object-cover">`;
         }
 
-        // Toggle admin panel
+        // Admin password (change this to your secret password)
+        const ADMIN_PASSWORD = 'gamedev123';
+        let isAdminAuthenticated = false;
+
+        // Check if admin is authenticated this session
+        function checkAdminAuth() {
+            return sessionStorage.getItem('adminAuth') === 'true';
+        }
+
+        // Toggle admin panel with password protection
         function toggleAdmin() {
             const panel = document.getElementById('adminPanel');
+            
+            // If trying to open and not authenticated
+            if (panel.classList.contains('hidden') && !checkAdminAuth()) {
+                const password = prompt('🔐 Admin şifresi:');
+                if (password !== ADMIN_PASSWORD) {
+                    if (password !== null) {
+                        alert('❌ Yanlış şifre!');
+                    }
+                    return;
+                }
+                sessionStorage.setItem('adminAuth', 'true');
+                isAdminAuthenticated = true;
+            }
+            
             panel.classList.toggle('hidden');
             if (!panel.classList.contains('hidden')) {
                 document.body.style.overflow = 'hidden';
             } else {
                 document.body.style.overflow = '';
                 resetForm();
+            }
+        }
+
+        // Secret key combination: Ctrl+Shift+A
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                toggleAdmin();
+            }
+        });
+
+        // Check URL for admin parameter
+        function checkAdminURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('admin')) {
+                // Remove ?admin from URL without reload
+                window.history.replaceState({}, document.title, window.location.pathname);
+                toggleAdmin();
             }
         }
 
@@ -942,7 +982,9 @@
             if (e.key === 'Escape') {
                 closeModal();
                 if (!document.getElementById('adminPanel').classList.contains('hidden')) {
-                    toggleAdmin();
+                    document.getElementById('adminPanel').classList.add('hidden');
+                    document.body.style.overflow = '';
+                    resetForm();
                 }
             }
         });
@@ -950,6 +992,7 @@
         // Initialize
         loadSiteContent();
         loadProjects();
+        checkAdminURL();
     </script>
 </body>
 </html>
