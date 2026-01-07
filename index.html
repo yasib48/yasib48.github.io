@@ -6,11 +6,13 @@
     <title>Game Developer Portfolio</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
         * { font-family: 'Inter', sans-serif; }
         html { scroll-behavior: smooth; }
 
-        /* Dark Mode Variables */
         :root {
             --bg-primary: #F5F5F5;
             --bg-secondary: #E5E5E5;
@@ -88,7 +90,6 @@
             border-radius: 4px;
         }
 
-        /* Scroll Reveal Animations */
         .scroll-reveal {
             opacity: 0;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -99,7 +100,6 @@
         .scroll-reveal { transform: translateY(60px); }
         .scroll-reveal.revealed { transform: translateY(0); }
 
-        /* Hero Slideshow */
         .hero-slideshow {
             position: absolute;
             inset: 0;
@@ -121,7 +121,6 @@
             filter: brightness(0.3) blur(2px);
         }
 
-        /* Toast notification */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -142,7 +141,6 @@
             opacity: 1;
         }
 
-        /* Theme toggle */
         .theme-toggle {
             position: relative;
             width: 56px;
@@ -169,13 +167,11 @@
             transform: translateX(28px);
         }
 
-        /* Nav styling */
         .nav-bg {
             background-color: var(--bg-primary);
             border-color: var(--border-color);
         }
 
-        /* Section backgrounds */
         .section-primary {
             background-color: var(--bg-primary);
         }
@@ -183,12 +179,10 @@
             background-color: var(--bg-secondary);
         }
 
-        /* Card backgrounds */
         .card-bg {
             background-color: var(--bg-card);
         }
 
-        /* Text colors */
         .text-main {
             color: var(--text-primary);
         }
@@ -196,7 +190,6 @@
             color: var(--text-secondary);
         }
 
-        /* Border colors */
         .border-main {
             border-color: var(--border-color);
         }
@@ -204,7 +197,6 @@
             border-color: var(--accent);
         }
 
-        /* Social button hover */
         .social-btn {
             border-color: var(--accent);
             color: var(--text-primary);
@@ -214,11 +206,276 @@
             background-color: var(--accent);
             color: var(--bg-primary);
         }
+
+        /* Admin Panel Styles */
+        .admin-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-overlay.show {
+            display: flex;
+        }
+        .admin-panel {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .admin-input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .admin-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        .admin-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .admin-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: white;
+            border: none;
+        }
+        .admin-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        .admin-btn-secondary {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+        }
+        .admin-btn-danger {
+            background: #ff4444;
+            color: white;
+            border: none;
+        }
+        .project-edit-card {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .password-modal {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .admin-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .admin-tab.active {
+            background: #ff6b6b;
+            color: white;
+        }
+        .admin-tab:hover:not(.active) {
+            background: #333;
+            color: white;
+        }
+        .firebase-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .firebase-status.connected {
+            background: rgba(0,255,0,0.2);
+            color: #00ff00;
+        }
+        .firebase-status.disconnected {
+            background: rgba(255,0,0,0.2);
+            color: #ff6b6b;
+        }
+        .firebase-status.local {
+            background: rgba(255,165,0,0.2);
+            color: #ffa500;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .connected .status-dot { background: #00ff00; }
+        .disconnected .status-dot { background: #ff6b6b; }
+        .local .status-dot { background: #ffa500; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body class="dark">
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
+
+    <!-- Admin Password Modal -->
+    <div id="adminOverlay" class="admin-overlay">
+        <div id="passwordModal" class="password-modal">
+            <h2 class="text-2xl font-bold text-white mb-2">🔐 Admin Girişi</h2>
+            <p class="text-gray-400 mb-6">Yönetim paneline erişmek için şifre girin</p>
+            <input type="password" id="adminPassword" class="admin-input" placeholder="Şifre..." onkeypress="if(event.key==='Enter')checkPassword()">
+            <div class="flex gap-3 justify-center mt-4">
+                <button onclick="checkPassword()" class="admin-btn admin-btn-primary">Giriş Yap</button>
+                <button onclick="closeAdmin()" class="admin-btn admin-btn-secondary">İptal</button>
+            </div>
+            <p class="text-gray-500 text-sm mt-4">Varsayılan şifre: admin123</p>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <div class="admin-header">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-white">⚙️ Admin Paneli</h2>
+                    <div id="firebaseStatus" class="firebase-status local">
+                        <span class="status-dot"></span>
+                        <span>Yerel Mod</span>
+                    </div>
+                </div>
+                <button onclick="closeAdmin()" class="text-white hover:text-gray-300 text-2xl">&times;</button>
+            </div>
+            <div class="admin-body">
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchTab('projects')">📁 Projeler</button>
+                    <button class="admin-tab" onclick="switchTab('settings')">⚙️ Ayarlar</button>
+                    <button class="admin-tab" onclick="switchTab('firebase')">🔥 Firebase</button>
+                </div>
+
+                <!-- Projects Tab -->
+                <div id="tab-projects" class="tab-content">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-white">Projeler</h3>
+                        <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
+                    </div>
+                    <div id="projectsList"></div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="tab-settings" class="tab-content" style="display: none;">
+                    <h3 class="text-lg font-semibold text-white mb-4">Site Ayarları</h3>
+                    <div class="project-edit-card">
+                        <label class="text-gray-400 text-sm">Admin Şifresi</label>
+                        <input type="password" id="newPassword" class="admin-input" placeholder="Yeni şifre...">
+                        <button onclick="changePassword()" class="admin-btn admin-btn-primary">Şifreyi Değiştir</button>
+                    </div>
+                    <div class="project-edit-card">
+                        <label class="text-gray-400 text-sm">Hakkımda Başlık</label>
+                        <input type="text" id="aboutTitle" class="admin-input" value="About Me">
+                        <label class="text-gray-400 text-sm">Hakkımda Metin 1</label>
+                        <textarea id="aboutText1" class="admin-input admin-textarea"></textarea>
+                        <label class="text-gray-400 text-sm">Hakkımda Metin 2</label>
+                        <textarea id="aboutText2" class="admin-input admin-textarea"></textarea>
+                        <button onclick="saveAboutSettings()" class="admin-btn admin-btn-primary">Kaydet</button>
+                    </div>
+                </div>
+
+                <!-- Firebase Tab -->
+                <div id="tab-firebase" class="tab-content" style="display: none;">
+                    <div class="project-edit-card">
+                        <h3 class="text-lg font-semibold text-white mb-4">🔥 Firebase Bağlantısı</h3>
+                        <p class="text-gray-400 mb-4">Firebase Realtime Database kullanarak verileriniz bulutta saklanır ve herkes değişiklikleri görebilir.</p>
+                        
+                        <div class="bg-yellow-900/30 border border-yellow-600 rounded-lg p-4 mb-4">
+                            <h4 class="text-yellow-400 font-semibold mb-2">📋 Firebase Kurulum Adımları:</h4>
+                            <ol class="text-gray-300 text-sm space-y-2">
+                                <li>1. <a href="https://console.firebase.google.com" target="_blank" class="text-blue-400 underline">Firebase Console</a>'a gidin</li>
+                                <li>2. Yeni proje oluşturun</li>
+                                <li>3. Realtime Database oluşturun</li>
+                                <li>4. Rules'ı şu şekilde ayarlayın: <code class="bg-black/50 px-2 py-1 rounded">{"rules": {".read": true, ".write": true}}</code></li>
+                                <li>5. Project Settings > Web App ekleyin</li>
+                                <li>6. Config bilgilerini aşağıya yapıştırın</li>
+                            </ol>
+                        </div>
+
+                        <label class="text-gray-400 text-sm">API Key</label>
+                        <input type="text" id="fbApiKey" class="admin-input" placeholder="AIza...">
+                        
+                        <label class="text-gray-400 text-sm">Auth Domain</label>
+                        <input type="text" id="fbAuthDomain" class="admin-input" placeholder="your-app.firebaseapp.com">
+                        
+                        <label class="text-gray-400 text-sm">Database URL</label>
+                        <input type="text" id="fbDatabaseUrl" class="admin-input" placeholder="https://your-app-default-rtdb.firebaseio.com">
+                        
+                        <label class="text-gray-400 text-sm">Project ID</label>
+                        <input type="text" id="fbProjectId" class="admin-input" placeholder="your-app">
+                        
+                        <label class="text-gray-400 text-sm">Storage Bucket</label>
+                        <input type="text" id="fbStorageBucket" class="admin-input" placeholder="your-app.appspot.com">
+                        
+                        <label class="text-gray-400 text-sm">Messaging Sender ID</label>
+                        <input type="text" id="fbMessagingSenderId" class="admin-input" placeholder="123456789">
+                        
+                        <label class="text-gray-400 text-sm">App ID</label>
+                        <input type="text" id="fbAppId" class="admin-input" placeholder="1:123:web:abc">
+
+                        <div class="flex gap-3 mt-4">
+                            <button onclick="saveFirebaseConfig()" class="admin-btn admin-btn-primary">Firebase'i Bağla</button>
+                            <button onclick="testFirebaseConnection()" class="admin-btn admin-btn-secondary">Bağlantıyı Test Et</button>
+                            <button onclick="disconnectFirebase()" class="admin-btn admin-btn-danger">Bağlantıyı Kes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-700 flex justify-between">
+                <span class="text-gray-500 text-sm">Ctrl+Shift+P ile açılır</span>
+                <button onclick="saveAllChanges()" class="admin-btn admin-btn-primary">💾 Tüm Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 nav-bg backdrop-blur-sm z-40 border-b border-main">
@@ -240,21 +497,13 @@
 
     <!-- Hero Section -->
     <section id="hero" class="min-h-screen flex items-center justify-center text-white relative overflow-hidden">
-        <!-- Slideshow Background -->
-        <div class="hero-slideshow" id="heroSlideshow">
-            <!-- Slides will be generated by JS -->
-        </div>
-
-        <!-- Overlay -->
+        <div class="hero-slideshow" id="heroSlideshow"></div>
         <div class="absolute inset-0 bg-black/50 z-[1]"></div>
-
-        <!-- Decorative elements -->
         <div class="absolute inset-0 opacity-20 z-[2]">
             <div class="absolute top-20 left-20 w-64 h-64 border border-white/30 rotate-45"></div>
             <div class="absolute bottom-20 right-20 w-48 h-48 border border-white/30 rotate-12"></div>
             <div class="absolute top-1/2 left-1/3 w-32 h-32 border border-white/20 -rotate-12"></div>
         </div>
-
         <div class="text-center z-10 px-6">
             <p class="text-gray-400 uppercase tracking-widest text-sm mb-4">Game Developer & Programmer</p>
             <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">Yasin Sen</h1>
@@ -273,9 +522,9 @@
         <div class="max-w-6xl mx-auto px-6">
             <div class="grid md:grid-cols-2 gap-16 items-center">
                 <div class="scroll-reveal">
-                    <h2 class="text-4xl font-bold mb-6 text-main">About Me</h2>
-                    <p class="text-sub text-lg leading-relaxed mb-6">I'm Yasin, a game developer with 6 years of experience working on a variety of game genres, from single-player adventures to multiplayer experiences. I enjoy tackling diverse challenges in game design and bringing ideas to life through interactive mechanics and gameplay systems</p>
-                    <p class="text-sub text-lg leading-relaxed mb-8">Six years ago, I started with a small, fun project just to experiment and learn. Since then, I've explored a wide range of game genres, from single-player adventures to multiplayer experiences, constantly pushing myself to try new ideas and improve my craft. Every project has taught me something new and shaped the way I approach game design today.</p>
+                    <h2 id="aboutTitleDisplay" class="text-4xl font-bold mb-6 text-main">About Me</h2>
+                    <p id="aboutText1Display" class="text-sub text-lg leading-relaxed mb-6">I'm Yasin, a game developer with 6 years of experience working on a variety of game genres, from single-player adventures to multiplayer experiences. I enjoy tackling diverse challenges in game design and bringing ideas to life through interactive mechanics and gameplay systems</p>
+                    <p id="aboutText2Display" class="text-sub text-lg leading-relaxed mb-8">Six years ago, I started with a small, fun project just to experiment and learn. Since then, I've explored a wide range of game genres, from single-player adventures to multiplayer experiences, constantly pushing myself to try new ideas and improve my craft. Every project has taught me something new and shaped the way I approach game design today.</p>
                     <div class="flex gap-4">
                         <a href="https://github.com/yasib48" target="_blank" class="social-btn w-10 h-10 border flex items-center justify-center">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -333,56 +582,7 @@
                 <h2 class="text-4xl font-bold mb-4 text-main">My Projects</h2>
                 <p class="text-sub text-lg">A collection of games I've developed and contributed to</p>
             </div>
-            <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(1)">
-                    <div class="aspect-video overflow-hidden">
-                        <img src="./assets/Map1.png" alt="Super Golf" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-main">Super Golf</h3>
-                            <span class="text-sm text-sub">2025 - 2026</span>
-                        </div>
-                        <p class="text-sub mb-4">A multiplayer golf game with Steam integration</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-xs px-2 py-1 section-secondary text-sub rounded">PC</span>
-                        </div>
-                    </div>
-                </div>
-            
-                <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(2)">
-                    <div class="aspect-video overflow-hidden">
-                        <img src="./assets/LDLevel1.png" alt="Level Evil" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-main">Level Evil</h3>
-                            <span class="text-sm text-sub">2025</span>
-                        </div>
-                        <p class="text-sub mb-4">Demo of a minimalist pixel art platformer showcasing level design, player movement, and core gameplay mechanics.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-xs px-2 py-1 section-secondary text-sub rounded">PC</span>
-                        </div>
-                    </div>
-                </div>
-            
-                <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(3)">
-                    <div class="aspect-video overflow-hidden">
-                        <img src="./assets/GFLogo.png" alt="Game Feel" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-main">Game Feel</h3>
-                            <span class="text-sm text-sub">2025</span>
-                        </div>
-                        <p class="text-sub mb-4">Experience how subtle effects shape gameplay satisfaction</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-xs px-2 py-1 section-secondary text-sub rounded">PC</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
     </section>
 
@@ -395,8 +595,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
-            <div id="modalContent" class="p-8 md:p-12">
-            </div>
+            <div id="modalContent" class="p-8 md:p-12"></div>
         </div>
     </div>
 
@@ -409,87 +608,417 @@
     </footer>
 
     <script>
-        const projects = [
-  {
-    "id": 1,
-    "title": "Super Golf",
-    "shortDesc": "A multiplayer golf game with Steam integration",
-    "fullDesc": "This is a multiplayer arcade golf game developed entirely by me as a solo project. From the initial concept to implementation, I worked on all aspects of the game, focusing on creating a fast, responsive, and enjoyable arcade experience. The multiplayer infrastructure is built using FishNet, enabling real-time matches with friends or online opponents.\n\nThe ball physics system was developed by combining custom-written code with Unity's Rigidbody-based physics. This approach allowed precise control over movement, collisions, and shot feedback, ensuring a consistent and satisfying arcade feel while maintaining reliable physical behavior. Gameplay mechanics are continuously tested and refined to provide clear feedback and smooth controls.\n\nThe project is still a work in progress and is actively being developed. A Steam release is planned in the near future, with Steam and Steamworks integration supporting online features and distribution. Overall, this project represents my hands-on experience working independently across different areas of game development, from multiplayer systems and gameplay mechanics to preparing a game for release.",
-    "thumbnail": "./assets/Map1.png",
-    "screenshots": [
-      "./assets/Map1.png",
-      "./assets/MainMenu.png",
-      "./assets/Lobi.png"
-    ],
-    "videos": [],
-    "technologies": [
-      "Unity",
-      "Blender",
-      "C#",
-      "FishNet",
-      "Steam",
-      "Shader Programming",
-      "Figma"
-    ],
-    "platforms": [
-      "PC"
-    ],
-    "year": "2025 - 2026",
-    "downloadLink": ""
-  },
-  {
-    "id": 2,
-    "title": "Level Evil",
-    "shortDesc": "Demo of a minimalist pixel art platformer showcasing level design, player movement, and core gameplay mechanics.",
-    "fullDesc": "This demo represents a small but highly challenging level I designed to explore precise movement and timing mechanics. The game intentionally features a difficult structure, crafted to test player reflexes and patience. I created it within the concept of a 'rage bait' experience, focusing on frustration-driven engagement that encourages players to learn through trial and error. Despite its minimalistic pixel art style, the design emphasizes tight control, risk-reward decisions, and level layouts that challenge conventional platforming expectations. This project highlights my approach to designing gameplay systems that provoke strong emotional responses while remaining mechanically clear and satisfying.",
-    "thumbnail": "./assets/LDLevel1.png",
-    "screenshots": [
-      "./assets/LDLevel1.png",
-      "./assets/LDLevel2.png",
-      "./assets/LDLevel3.png"
-    ],
-    "videos": [
-      "./assets/LDPlay.mp4"
-    ],
-    "technologies": [
-      "Unity",
-      "Aseprite",
-      "C#"
-    ],
-    "platforms": [
-      "PC"
-    ],
-    "year": "2025",
-    "downloadLink": "https://neutrony.itch.io/level-evil-demo"
-  },
-  {
-    "id": 3,
-    "title": "Game Feel",
-    "shortDesc": "Experience how subtle effects shape gameplay satisfaction",
-    "fullDesc": "This is a small interactive demo designed to showcase how subtle design choices can transform simple actions into a satisfying experience. You can press F at any time to toggle visual and feedback effects on and off, letting you see how these layers enhance the gameplay.\n\nEvery jump, collision, and movement in the game has been carefully crafted to feel responsive and engaging. Effects like flashes, camera shakes, particle feedback, and smooth animations work together to make even minimalistic pixel art levels feel alive and reactive.\n\nThis project highlights my approach to designing gameplay systems where every interaction matters, demonstrating how thoughtful attention to detail can elevate a simple demo into a compelling experience.",
-    "thumbnail": "./assets/GFLogo.png",
-    "screenshots": [
-      "./assets/GF1.png",
-      "./assets/GF2.png"
-    ],
-    "videos": [
-      "./assets/GameFeelGamePlay.mp4"
-    ],
-    "technologies": [
-      "Unity",
-      "C#"
-    ],
-    "platforms": [
-      "PC"
-    ],
-    "year": "2025",
-    "downloadLink": "https://neutrony.itch.io/game-feel"
-  }
-];
+        // Default Projects Data
+        const defaultProjects = [
+            {
+                id: 1,
+                title: "Super Golf",
+                shortDesc: "A multiplayer golf game with Steam integration",
+                fullDesc: "This is a multiplayer arcade golf game developed entirely by me as a solo project. From the initial concept to implementation, I worked on all aspects of the game, focusing on creating a fast, responsive, and enjoyable arcade experience. The multiplayer infrastructure is built using FishNet, enabling real-time matches with friends or online opponents.\n\nThe ball physics system was developed by combining custom-written code with Unity's Rigidbody-based physics. This approach allowed precise control over movement, collisions, and shot feedback, ensuring a consistent and satisfying arcade feel while maintaining reliable physical behavior. Gameplay mechanics are continuously tested and refined to provide clear feedback and smooth controls.\n\nThe project is still a work in progress and is actively being developed. A Steam release is planned in the near future, with Steam and Steamworks integration supporting online features and distribution. Overall, this project represents my hands-on experience working independently across different areas of game development, from multiplayer systems and gameplay mechanics to preparing a game for release.",
+                thumbnail: "./assets/Map1.png",
+                screenshots: ["./assets/Map1.png", "./assets/MainMenu.png", "./assets/Lobi.png"],
+                videos: [],
+                technologies: ["Unity", "Blender", "C#", "FishNet", "Steam", "Shader Programming", "Figma"],
+                platforms: ["PC"],
+                year: "2025 - 2026",
+                downloadLink: ""
+            },
+            {
+                id: 2,
+                title: "Level Evil",
+                shortDesc: "Demo of a minimalist pixel art platformer showcasing level design, player movement, and core gameplay mechanics.",
+                fullDesc: "This demo represents a small but highly challenging level I designed to explore precise movement and timing mechanics. The game intentionally features a difficult structure, crafted to test player reflexes and patience. I created it within the concept of a 'rage bait' experience, focusing on frustration-driven engagement that encourages players to learn through trial and error. Despite its minimalistic pixel art style, the design emphasizes tight control, risk-reward decisions, and level layouts that challenge conventional platforming expectations. This project highlights my approach to designing gameplay systems that provoke strong emotional responses while remaining mechanically clear and satisfying.",
+                thumbnail: "./assets/LDLevel1.png",
+                screenshots: ["./assets/LDLevel1.png", "./assets/LDLevel2.png", "./assets/LDLevel3.png"],
+                videos: ["./assets/LDPlay.mp4"],
+                technologies: ["Unity", "Aseprite", "C#"],
+                platforms: ["PC"],
+                year: "2025",
+                downloadLink: "https://neutrony.itch.io/level-evil-demo"
+            }
+        ];
+
+        // Global State
+        let projects = [...defaultProjects];
+        let adminPassword = localStorage.getItem('adminPassword') || 'admin123';
+        let isLoggedIn = false;
+        let firebaseDb = null;
+        let firebaseConnected = false;
+
+        // Firebase Configuration
+        let firebaseConfig = JSON.parse(localStorage.getItem('firebaseConfig') || 'null');
+
+        // Initialize Firebase if config exists
+        function initFirebase() {
+            if (firebaseConfig && firebaseConfig.apiKey) {
+                try {
+                    if (!firebase.apps.length) {
+                        firebase.initializeApp(firebaseConfig);
+                    }
+                    firebaseDb = firebase.database();
+                    
+                    // Listen for data changes
+                    firebaseDb.ref('projects').on('value', (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            projects = data;
+                            renderProjects();
+                            initSlideshow();
+                            updateFirebaseStatus('connected');
+                        }
+                    });
+
+                    firebaseDb.ref('settings').on('value', (snapshot) => {
+                        const settings = snapshot.val();
+                        if (settings) {
+                            if (settings.aboutTitle) document.getElementById('aboutTitleDisplay').textContent = settings.aboutTitle;
+                            if (settings.aboutText1) document.getElementById('aboutText1Display').textContent = settings.aboutText1;
+                            if (settings.aboutText2) document.getElementById('aboutText2Display').textContent = settings.aboutText2;
+                        }
+                    });
+
+                    firebaseConnected = true;
+                    updateFirebaseStatus('connected');
+                } catch (error) {
+                    console.error('Firebase init error:', error);
+                    updateFirebaseStatus('disconnected');
+                }
+            } else {
+                // Load from localStorage if no Firebase
+                const savedProjects = localStorage.getItem('projects');
+                if (savedProjects) {
+                    projects = JSON.parse(savedProjects);
+                }
+                updateFirebaseStatus('local');
+            }
+        }
+
+        function updateFirebaseStatus(status) {
+            const statusEl = document.getElementById('firebaseStatus');
+            statusEl.className = `firebase-status ${status}`;
+            const labels = {
+                connected: '🔥 Firebase Bağlı',
+                disconnected: '❌ Bağlantı Hatası',
+                local: '💾 Yerel Mod'
+            };
+            statusEl.innerHTML = `<span class="status-dot"></span><span>${labels[status]}</span>`;
+        }
+
+        // Admin Panel Functions
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + Shift + P to open admin
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                openAdmin();
+            }
+            if (e.key === 'Escape') {
+                closeModal();
+                if (!isLoggedIn) closeAdmin();
+            }
+        });
+
+        function openAdmin() {
+            document.getElementById('adminOverlay').classList.add('show');
+            document.getElementById('passwordModal').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('adminPassword').focus();
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminOverlay').classList.remove('show');
+            isLoggedIn = false;
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('adminPassword').value;
+            if (input === adminPassword) {
+                isLoggedIn = true;
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'flex';
+                loadAdminData();
+                showToast('✅ Giriş başarılı!');
+            } else {
+                showToast('❌ Yanlış şifre!');
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+
+        function loadAdminData() {
+            renderProjectsList();
+            loadFirebaseConfig();
+            loadAboutSettings();
+        }
+
+        function renderProjectsList() {
+            const container = document.getElementById('projectsList');
+            container.innerHTML = projects.map((p, index) => `
+                <div class="project-edit-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-white font-semibold">${p.title}</h4>
+                        <div class="flex gap-2">
+                            <button onclick="editProject(${index})" class="admin-btn admin-btn-secondary text-sm px-3 py-1">✏️ Düzenle</button>
+                            <button onclick="deleteProject(${index})" class="admin-btn admin-btn-danger text-sm px-3 py-1">🗑️ Sil</button>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm">${p.shortDesc}</p>
+                    <div class="flex gap-2 mt-2">
+                        ${p.platforms.map(pl => `<span class="text-xs bg-gray-700 px-2 py-1 rounded">${pl}</span>`).join('')}
+                        <span class="text-xs text-gray-500">${p.year}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addNewProject() {
+            const newProject = {
+                id: Date.now(),
+                title: "Yeni Proje",
+                shortDesc: "Proje açıklaması...",
+                fullDesc: "Detaylı açıklama...",
+                thumbnail: "./assets/placeholder.png",
+                screenshots: [],
+                videos: [],
+                technologies: ["Unity"],
+                platforms: ["PC"],
+                year: new Date().getFullYear().toString(),
+                downloadLink: ""
+            };
+            projects.push(newProject);
+            renderProjectsList();
+            editProject(projects.length - 1);
+        }
+
+        function editProject(index) {
+            const p = projects[index];
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[10000] p-4';
+            modal.id = 'editProjectModal';
+            modal.innerHTML = `
+                <div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Proje Düzenle</h3>
+                    
+                    <label class="text-gray-400 text-sm">Başlık</label>
+                    <input type="text" id="editTitle" class="admin-input" value="${p.title}">
+                    
+                    <label class="text-gray-400 text-sm">Kısa Açıklama</label>
+                    <input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}">
+                    
+                    <label class="text-gray-400 text-sm">Detaylı Açıklama</label>
+                    <textarea id="editFullDesc" class="admin-input admin-textarea">${p.fullDesc}</textarea>
+                    
+                    <label class="text-gray-400 text-sm">Thumbnail URL</label>
+                    <input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}">
+                    
+                    <label class="text-gray-400 text-sm">Screenshots (virgülle ayır)</label>
+                    <input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}">
+                    
+                    <label class="text-gray-400 text-sm">Videos (virgülle ayır)</label>
+                    <input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}">
+                    
+                    <label class="text-gray-400 text-sm">Teknolojiler (virgülle ayır)</label>
+                    <input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}">
+                    
+                    <label class="text-gray-400 text-sm">Platformlar (virgülle ayır)</label>
+                    <input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}">
+                    
+                    <label class="text-gray-400 text-sm">Yıl</label>
+                    <input type="text" id="editYear" class="admin-input" value="${p.year}">
+                    
+                    <label class="text-gray-400 text-sm">Download Link</label>
+                    <input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}">
+                    
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-primary">Kaydet</button>
+                        <button onclick="closeEditModal()" class="admin-btn admin-btn-secondary">İptal</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveProjectEdit(index) {
+            projects[index] = {
+                ...projects[index],
+                title: document.getElementById('editTitle').value,
+                shortDesc: document.getElementById('editShortDesc').value,
+                fullDesc: document.getElementById('editFullDesc').value,
+                thumbnail: document.getElementById('editThumbnail').value,
+                screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s),
+                videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s),
+                technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s),
+                platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s),
+                year: document.getElementById('editYear').value,
+                downloadLink: document.getElementById('editDownload').value
+            };
+            closeEditModal();
+            renderProjectsList();
+            showToast('✅ Proje güncellendi!');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editProjectModal');
+            if (modal) modal.remove();
+        }
+
+        function deleteProject(index) {
+            if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) {
+                projects.splice(index, 1);
+                renderProjectsList();
+                showToast('🗑️ Proje silindi!');
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function changePassword() {
+            const newPass = document.getElementById('newPassword').value;
+            if (newPass.length >= 4) {
+                adminPassword = newPass;
+                localStorage.setItem('adminPassword', newPass);
+                showToast('✅ Şifre değiştirildi!');
+                document.getElementById('newPassword').value = '';
+            } else {
+                showToast('❌ Şifre en az 4 karakter olmalı!');
+            }
+        }
+
+        function loadAboutSettings() {
+            const settings = JSON.parse(localStorage.getItem('aboutSettings') || '{}');
+            document.getElementById('aboutTitle').value = settings.title || 'About Me';
+            document.getElementById('aboutText1').value = settings.text1 || document.getElementById('aboutText1Display').textContent;
+            document.getElementById('aboutText2').value = settings.text2 || document.getElementById('aboutText2Display').textContent;
+        }
+
+        function saveAboutSettings() {
+            const settings = {
+                title: document.getElementById('aboutTitle').value,
+                text1: document.getElementById('aboutText1').value,
+                text2: document.getElementById('aboutText2').value
+            };
+            
+            // Update display
+            document.getElementById('aboutTitleDisplay').textContent = settings.title;
+            document.getElementById('aboutText1Display').textContent = settings.text1;
+            document.getElementById('aboutText2Display').textContent = settings.text2;
+            
+            // Save to Firebase or localStorage
+            if (firebaseConnected && firebaseDb) {
+                firebaseDb.ref('settings').set({
+                    aboutTitle: settings.title,
+                    aboutText1: settings.text1,
+                    aboutText2: settings.text2
+                });
+            }
+            localStorage.setItem('aboutSettings', JSON.stringify(settings));
+            showToast('✅ Ayarlar kaydedildi!');
+        }
+
+        function loadFirebaseConfig() {
+            if (firebaseConfig) {
+                document.getElementById('fbApiKey').value = firebaseConfig.apiKey || '';
+                document.getElementById('fbAuthDomain').value = firebaseConfig.authDomain || '';
+                document.getElementById('fbDatabaseUrl').value = firebaseConfig.databaseURL || '';
+                document.getElementById('fbProjectId').value = firebaseConfig.projectId || '';
+                document.getElementById('fbStorageBucket').value = firebaseConfig.storageBucket || '';
+                document.getElementById('fbMessagingSenderId').value = firebaseConfig.messagingSenderId || '';
+                document.getElementById('fbAppId').value = firebaseConfig.appId || '';
+            }
+        }
+
+        function saveFirebaseConfig() {
+            firebaseConfig = {
+                apiKey: document.getElementById('fbApiKey').value,
+                authDomain: document.getElementById('fbAuthDomain').value,
+                databaseURL: document.getElementById('fbDatabaseUrl').value,
+                projectId: document.getElementById('fbProjectId').value,
+                storageBucket: document.getElementById('fbStorageBucket').value,
+                messagingSenderId: document.getElementById('fbMessagingSenderId').value,
+                appId: document.getElementById('fbAppId').value
+            };
+            localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
+            showToast('✅ Firebase ayarları kaydedildi! Sayfa yenileniyor...');
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        function testFirebaseConnection() {
+            if (firebaseConnected && firebaseDb) {
+                firebaseDb.ref('.info/connected').once('value', (snap) => {
+                    if (snap.val() === true) {
+                        showToast('✅ Firebase bağlantısı başarılı!');
+                    } else {
+                        showToast('❌ Firebase bağlantısı yok!');
+                    }
+                });
+            } else {
+                showToast('❌ Firebase yapılandırılmamış!');
+            }
+        }
+
+        function disconnectFirebase() {
+            localStorage.removeItem('firebaseConfig');
+            firebaseConfig = null;
+            firebaseConnected = false;
+            showToast('🔌 Firebase bağlantısı kesildi! Sayfa yenileniyor...');
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        function saveAllChanges() {
+            // Save to Firebase if connected
+            if (firebaseConnected && firebaseDb) {
+                firebaseDb.ref('projects').set(projects)
+                    .then(() => {
+                        showToast('✅ Tüm değişiklikler Firebase\'e kaydedildi!');
+                    })
+                    .catch(err => {
+                        showToast('❌ Firebase kayıt hatası: ' + err.message);
+                    });
+            } else {
+                // Save to localStorage
+                localStorage.setItem('projects', JSON.stringify(projects));
+                showToast('💾 Değişiklikler yerel olarak kaydedildi!');
+            }
+            
+            // Refresh display
+            renderProjects();
+            initSlideshow();
+        }
+
+        // Render Projects
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = projects.map(p => `
+                <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(${p.id})">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-main">${p.title}</h3>
+                            <span class="text-sm text-sub">${p.year}</span>
+                        </div>
+                        <p class="text-sub mb-4">${p.shortDesc}</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${p.platforms.map(pl => `<span class="text-xs px-2 py-1 section-secondary text-sub rounded">${pl}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Re-observe for scroll animations
+            document.querySelectorAll('.scroll-reveal').forEach(el => {
+                revealObserver.observe(el);
+            });
+        }
 
         // Hero Slideshow
         function initSlideshow() {
             const slideshowContainer = document.getElementById('heroSlideshow');
+            slideshowContainer.innerHTML = '';
             const allImages = [];
 
             projects.forEach(project => {
@@ -503,8 +1032,8 @@
 
             allImages.forEach((img, index) => {
                 const slide = document.createElement('div');
-                slide.className = \`hero-slide \${index === 0 ? 'active' : ''}\`;
-                slide.innerHTML = \`<img src="\${img}" alt="Project Screenshot">\`;
+                slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
+                slide.innerHTML = `<img src="${img}" alt="Project Screenshot">`;
                 slideshowContainer.appendChild(slide);
             });
 
@@ -512,14 +1041,14 @@
                 let currentSlide = 0;
                 setInterval(() => {
                     const slides = document.querySelectorAll('.hero-slide');
-                    slides[currentSlide].classList.remove('active');
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    slides[currentSlide].classList.add('active');
+                    if (slides.length > 0) {
+                        slides[currentSlide].classList.remove('active');
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        slides[currentSlide].classList.add('active');
+                    }
                 }, 4000);
             }
         }
-
-        initSlideshow();
 
         // Theme Toggle
         function toggleTheme() {
@@ -531,22 +1060,18 @@
             document.body.classList.remove('dark');
         }
 
-        // Show contact info toast
-        function showContactInfo(type, value) {
+        // Toast
+        function showToast(message) {
             const toast = document.getElementById('toast');
-            const icon = type === 'gmail' ? '📧' : '🎮';
-            toast.innerHTML = \`\${icon} <span class="ml-2">\${value}</span>\`;
+            toast.innerHTML = message;
             toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
 
-            navigator.clipboard.writeText(value).then(() => {
-                setTimeout(() => {
-                    toast.innerHTML += ' <span class="text-sm opacity-70">(Copied!)</span>';
-                }, 300);
-            });
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        function showContactInfo(type, value) {
+            const icon = type === 'gmail' ? '📧' : '🎮';
+            navigator.clipboard.writeText(value);
+            showToast(`${icon} ${value} (Kopyalandı!)`);
         }
 
         function openModal(id) {
@@ -556,63 +1081,63 @@
             const modal = document.getElementById('projectModal');
             const content = document.getElementById('modalContent');
 
-            content.innerHTML = \`
+            content.innerHTML = `
                 <div class="grid lg:grid-cols-2 gap-8">
                     <div>
                         <div id="mainMedia" class="w-full aspect-video mb-4 bg-black rounded-lg overflow-hidden">
-                            <img src="\${project.thumbnail}" alt="\${project.title}" class="w-full h-full object-cover">
+                            <img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover">
                         </div>
-                        \${(project.screenshots && project.screenshots.length > 0) || (project.videos && project.videos.length > 0) ? \`
+                        ${(project.screenshots && project.screenshots.length > 0) || (project.videos && project.videos.length > 0) ? `
                             <div class="grid grid-cols-4 gap-2">
-                                \${project.videos ? project.videos.map(v => \`
-                                    <div class="relative w-full aspect-video cursor-pointer hover:opacity-80 transition-opacity bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('\${v}')">
+                                ${project.videos ? project.videos.map(v => `
+                                    <div class="relative w-full aspect-video cursor-pointer hover:opacity-80 transition-opacity bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('${v}')">
                                         <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z"/>
                                         </svg>
                                         <span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span>
                                     </div>
-                                \`).join('') : ''}
-                                \${project.screenshots ? project.screenshots.slice(0, 4 - (project.videos ? project.videos.length : 0)).map(s => \`
-                                    <img src="\${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 transition-opacity rounded" onclick="showImage('\${s}')">
-                                \`).join('') : ''}
+                                `).join('') : ''}
+                                ${project.screenshots ? project.screenshots.slice(0, 4 - (project.videos ? project.videos.length : 0)).map(s => `
+                                    <img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 transition-opacity rounded" onclick="showImage('${s}')">
+                                `).join('') : ''}
                             </div>
-                        \` : ''}
+                        ` : ''}
                     </div>
                     <div>
                         <div class="flex items-center gap-4 mb-4">
-                            <h2 class="text-3xl font-bold text-main">\${project.title}</h2>
-                            <span class="text-sub">\${project.year}</span>
+                            <h2 class="text-3xl font-bold text-main">${project.title}</h2>
+                            <span class="text-sub">${project.year}</span>
                         </div>
-                        <p class="text-sub text-lg leading-relaxed mb-6" style="white-space: pre-line;">\${project.fullDesc}</p>
+                        <p class="text-sub text-lg leading-relaxed mb-6" style="white-space: pre-line;">${project.fullDesc}</p>
                         <div class="mb-6">
                             <h4 class="font-bold mb-3 text-main">Technologies</h4>
                             <div class="flex flex-wrap gap-2">
-                                \${project.technologies.map(t => \`
-                                    <span class="px-3 py-1 border border-main text-sm rounded text-main">\${t}</span>
-                                \`).join('')}
+                                ${project.technologies.map(t => `
+                                    <span class="px-3 py-1 border border-main text-sm rounded text-main">${t}</span>
+                                `).join('')}
                             </div>
                         </div>
                         <div class="mb-6">
                             <h4 class="font-bold mb-3 text-main">Platforms</h4>
                             <div class="flex flex-wrap gap-2">
-                                \${project.platforms.map(p => \`
-                                    <span class="px-3 py-1 text-sm rounded" style="background-color: var(--accent); color: var(--bg-primary);">\${p}</span>
-                                \`).join('')}
+                                ${project.platforms.map(p => `
+                                    <span class="px-3 py-1 text-sm rounded" style="background-color: var(--accent); color: var(--bg-primary);">${p}</span>
+                                `).join('')}
                             </div>
                         </div>
                         <div class="flex gap-4">
-                            \${project.downloadLink ? \`
-                                <a href="\${project.downloadLink}" target="_blank" class="flex items-center gap-2 px-6 py-3 font-semibold hover:opacity-80 transition-colors rounded" style="background-color: var(--accent); color: var(--bg-primary);">
+                            ${project.downloadLink ? `
+                                <a href="${project.downloadLink}" target="_blank" class="flex items-center gap-2 px-6 py-3 font-semibold hover:opacity-80 transition-colors rounded" style="background-color: var(--accent); color: var(--bg-primary);">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                     </svg>
                                     Download Demo
                                 </a>
-                            \` : ''}
+                            ` : ''}
                         </div>
                     </div>
                 </div>
-            \`;
+            `;
 
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -624,38 +1149,28 @@
         }
 
         function showVideo(url) {
-            const mainMedia = document.getElementById('mainMedia');
-            mainMedia.innerHTML = \`<video src="\${url}" class="w-full h-full" controls autoplay></video>\`;
+            document.getElementById('mainMedia').innerHTML = `<video src="${url}" class="w-full h-full" controls autoplay></video>`;
         }
 
         function showImage(url) {
-            const mainMedia = document.getElementById('mainMedia');
-            mainMedia.innerHTML = \`<img src="\${url}" alt="Screenshot" class="w-full h-full object-cover">\`;
+            document.getElementById('mainMedia').innerHTML = `<img src="${url}" alt="Screenshot" class="w-full h-full object-cover">`;
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-
-        // Scroll Reveal Animation
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
+        // Scroll Reveal
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('revealed');
-                    }, index * 100);
+                    setTimeout(() => entry.target.classList.add('revealed'), index * 100);
                 }
             });
         }, observerOptions);
 
+        // Initialize
+        initFirebase();
+        renderProjects();
+        initSlideshow();
+        
         document.querySelectorAll('.scroll-reveal').forEach(el => {
             revealObserver.observe(el);
         });
