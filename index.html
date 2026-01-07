@@ -192,6 +192,11 @@
         .project-card-admin {
             background: #222; border: 1px solid #333; border-radius: 12px;
             padding: 16px; margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+        .project-card-admin.dragging {
+            opacity: 0.5;
+            border-color: #667eea;
         }
         .project-card-admin-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
@@ -224,6 +229,20 @@
             color: #888; cursor: pointer; font-size: 13px; transition: all 0.2s;
         }
         .add-btn:hover { border-color: #667eea; color: #667eea; }
+
+        /* Project Order Buttons */
+        .order-btn {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            background: #333; border: 1px solid #444; border-radius: 6px;
+            color: #888; cursor: pointer; transition: all 0.2s;
+        }
+        .order-btn:hover:not(:disabled) { background: #667eea; color: white; border-color: #667eea; }
+        .order-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .order-number {
+            background: #667eea; color: white; width: 28px; height: 28px;
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 12px;
+        }
     </style>
 </head>
 <body class="dark">
@@ -332,7 +351,7 @@
                     </div>
                     <div class="admin-section">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="admin-section-title mb-0">📁 Projeler</div>
+                            <div class="admin-section-title mb-0">📁 Projeler (Sıralamayı değiştirmek için okları kullanın)</div>
                             <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
                         </div>
                         <div id="projectsList"></div>
@@ -388,6 +407,10 @@
                 <div id="tab-firebase" class="tab-content" style="display:none;">
                     <div class="admin-section">
                         <div class="admin-section-title">🔥 Firebase Bağlantısı</div>
+                        <div class="bg-green-900/20 border border-green-600/50 rounded-lg p-4 mb-4">
+                            <h4 class="text-green-400 font-semibold mb-2">✅ Tüm Site Verileri Senkronize Edilir:</h4>
+                            <p class="text-gray-300 text-sm">Hero, Hakkımda, Yetenekler, Projeler (sıralama dahil), Footer, Sosyal Medya ve tüm ayarlar Firebase'e kaydedilir.</p>
+                        </div>
                         <div class="bg-yellow-900/20 border border-yellow-600/50 rounded-lg p-4 mb-4">
                             <h4 class="text-yellow-400 font-semibold mb-2">📋 Kurulum Adımları:</h4>
                             <ol class="text-gray-300 text-sm space-y-1">
@@ -637,11 +660,24 @@
                     }
                     firebaseDb = firebase.database();
                     
+                    // Listen for ALL site data changes
                     firebaseDb.ref('siteData').on('value', (snapshot) => {
                         const data = snapshot.val();
                         if (data) {
-                            siteData = data;
+                            // Merge with defaults to ensure all fields exist
+                            siteData = {
+                                ...JSON.parse(JSON.stringify(defaultData)),
+                                ...data,
+                                hero: { ...defaultData.hero, ...(data.hero || {}) },
+                                about: { ...defaultData.about, ...(data.about || {}) },
+                                experience: { ...defaultData.experience, ...(data.experience || {}) },
+                                social: { ...defaultData.social, ...(data.social || {}) },
+                                nav: { ...defaultData.nav, ...(data.nav || {}) },
+                                projectsSection: { ...defaultData.projectsSection, ...(data.projectsSection || {}) },
+                                footer: { ...defaultData.footer, ...(data.footer || {}) }
+                            };
                             applyAllData();
+                            console.log('✅ All site data loaded from Firebase');
                         }
                     });
 
@@ -661,7 +697,12 @@
         function loadLocalData() {
             const saved = localStorage.getItem('siteData');
             if (saved) {
-                siteData = JSON.parse(saved);
+                const data = JSON.parse(saved);
+                // Merge with defaults
+                siteData = {
+                    ...JSON.parse(JSON.stringify(defaultData)),
+                    ...data
+                };
             }
         }
 
@@ -816,13 +857,31 @@
         function saveAllData() {
             collectFormData();
             
+            // Create a complete data object to save
+            const dataToSave = {
+                hero: siteData.hero,
+                about: siteData.about,
+                skills: siteData.skills,
+                experience: siteData.experience,
+                social: siteData.social,
+                nav: siteData.nav,
+                projectsSection: siteData.projectsSection,
+                footer: siteData.footer,
+                siteTitle: siteData.siteTitle,
+                projects: siteData.projects
+            };
+            
             if (firebaseConnected && firebaseDb) {
-                firebaseDb.ref('siteData').set(siteData)
-                    .then(() => showToast('✅ Tüm değişiklikler Firebase\'e kaydedildi!'))
+                // Save ALL data to Firebase
+                firebaseDb.ref('siteData').set(dataToSave)
+                    .then(() => {
+                        showToast('✅ Tüm site verileri Firebase\'e kaydedildi!');
+                        console.log('✅ All data saved to Firebase:', Object.keys(dataToSave));
+                    })
                     .catch(err => showToast('❌ Hata: ' + err.message));
             } else {
-                localStorage.setItem('siteData', JSON.stringify(siteData));
-                showToast('💾 Değişiklikler yerel olarak kaydedildi!');
+                localStorage.setItem('siteData', JSON.stringify(dataToSave));
+                showToast('💾 Tüm veriler yerel olarak kaydedildi!');
             }
             
             applyAllData();
@@ -990,12 +1049,28 @@
 
         // ==================== PROJECTS ADMIN ====================
         function renderProjectsAdmin() {
+            const totalProjects = siteData.projects.length;
             document.getElementById('projectsList').innerHTML = siteData.projects.map((p, i) => `
-                <div class="project-card-admin">
+                <div class="project-card-admin" data-index="${i}">
                     <div class="project-card-admin-header">
-                        <div>
-                            <h4 class="text-white font-semibold">${p.title}</h4>
-                            <p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p>
+                        <div class="flex items-center gap-3">
+                            <div class="flex flex-col gap-1">
+                                <button onclick="moveProjectUp(${i})" class="order-btn" ${i === 0 ? 'disabled' : ''} title="Yukarı Taşı">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                    </svg>
+                                </button>
+                                <button onclick="moveProjectDown(${i})" class="order-btn" ${i === totalProjects - 1 ? 'disabled' : ''} title="Aşağı Taşı">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="order-number">${i + 1}</div>
+                            <div>
+                                <h4 class="text-white font-semibold">${p.title}</h4>
+                                <p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p>
+                            </div>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="editProject(${i})" class="admin-btn admin-btn-secondary">✏️ Düzenle</button>
@@ -1004,6 +1079,28 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        // Move project up in order
+        function moveProjectUp(index) {
+            if (index > 0) {
+                const temp = siteData.projects[index];
+                siteData.projects[index] = siteData.projects[index - 1];
+                siteData.projects[index - 1] = temp;
+                renderProjectsAdmin();
+                showToast(`📤 "${temp.title}" yukarı taşındı`);
+            }
+        }
+
+        // Move project down in order
+        function moveProjectDown(index) {
+            if (index < siteData.projects.length - 1) {
+                const temp = siteData.projects[index];
+                siteData.projects[index] = siteData.projects[index + 1];
+                siteData.projects[index + 1] = temp;
+                renderProjectsAdmin();
+                showToast(`📥 "${temp.title}" aşağı taşındı`);
+            }
         }
 
         function addNewProject() {
