@@ -132,6 +132,22 @@
             background-color: var(--accent); color: var(--bg-primary);
         }
 
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed; inset: 0; background: var(--bg-primary);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9998; transition: opacity 0.5s ease;
+        }
+        .loading-overlay.hidden {
+            opacity: 0; pointer-events: none;
+        }
+        .loading-spinner {
+            width: 50px; height: 50px; border: 3px solid var(--border-color);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         /* Admin Panel */
         .admin-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
@@ -209,10 +225,12 @@
         .firebase-status.connected { background: rgba(5,150,105,0.2); color: #10b981; }
         .firebase-status.disconnected { background: rgba(220,38,38,0.2); color: #ef4444; }
         .firebase-status.local { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .firebase-status.loading { background: rgba(59,130,246,0.2); color: #3b82f6; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
         .connected .status-dot { background: #10b981; }
         .disconnected .status-dot { background: #ef4444; }
         .local .status-dot { background: #f59e0b; }
+        .loading .status-dot { background: #3b82f6; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         .password-modal {
@@ -246,6 +264,14 @@
     </style>
 </head>
 <body class="dark">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-sub">Yükleniyor...</p>
+        </div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
     <!-- Admin Panel -->
@@ -407,10 +433,18 @@
                 <div id="tab-firebase" class="tab-content" style="display:none;">
                     <div class="admin-section">
                         <div class="admin-section-title">🔥 Firebase Bağlantısı</div>
+                        
+                        <div class="bg-red-900/20 border border-red-600/50 rounded-lg p-4 mb-4">
+                            <h4 class="text-red-400 font-semibold mb-2">⚠️ ÖNEMLİ: Firebase Config'i Koda Gömmeniz Gerekiyor!</h4>
+                            <p class="text-gray-300 text-sm mb-2">Firebase ayarları tarayıcı hafızasında (localStorage) tutuluyor. Bu yüzden siz projeleri görüyorsunuz ama arkadaşlarınız göremiyor.</p>
+                            <p class="text-gray-300 text-sm"><strong>Çözüm:</strong> Aşağıdaki "Config'i Koda Göm" butonuna tıklayın, çıkan kodu kopyalayıp HTML dosyanızdaki ilgili yere yapıştırın.</p>
+                        </div>
+                        
                         <div class="bg-green-900/20 border border-green-600/50 rounded-lg p-4 mb-4">
                             <h4 class="text-green-400 font-semibold mb-2">✅ Tüm Site Verileri Senkronize Edilir:</h4>
                             <p class="text-gray-300 text-sm">Hero, Hakkımda, Yetenekler, Projeler (sıralama dahil), Footer, Sosyal Medya ve tüm ayarlar Firebase'e kaydedilir.</p>
                         </div>
+                        
                         <div class="bg-yellow-900/20 border border-yellow-600/50 rounded-lg p-4 mb-4">
                             <h4 class="text-yellow-400 font-semibold mb-2">📋 Kurulum Adımları:</h4>
                             <ol class="text-gray-300 text-sm space-y-1">
@@ -420,8 +454,10 @@
                                 <li>4. Rules: <code class="bg-black/50 px-2 py-0.5 rounded text-xs">{"rules": {".read": true, ".write": true}}</code></li>
                                 <li>5. Project Settings > Web App ekle</li>
                                 <li>6. Config bilgilerini aşağıya yapıştır</li>
+                                <li>7. <strong class="text-yellow-400">"Config'i Koda Göm" butonuna tıkla ve HTML'i güncelle!</strong></li>
                             </ol>
                         </div>
+                        
                         <div class="grid-2">
                             <div>
                                 <label class="admin-label">API Key</label>
@@ -440,9 +476,10 @@
                                 <input type="text" id="fbAppId" class="admin-input" placeholder="1:123:web:abc">
                             </div>
                         </div>
-                        <div class="flex gap-3 mt-4">
+                        <div class="flex gap-3 mt-4 flex-wrap">
                             <button onclick="saveFirebaseConfig()" class="admin-btn admin-btn-primary">🔥 Firebase'i Bağla</button>
                             <button onclick="testFirebase()" class="admin-btn admin-btn-secondary">Test Et</button>
+                            <button onclick="showEmbedCode()" class="admin-btn admin-btn-success">📋 Config'i Koda Göm</button>
                             <button onclick="disconnectFirebase()" class="admin-btn admin-btn-danger">Bağlantıyı Kes</button>
                         </div>
                     </div>
@@ -469,6 +506,19 @@
                     <button onclick="resetToDefault()" class="admin-btn admin-btn-secondary">🔄 Varsayılana Dön</button>
                     <button onclick="saveAllData()" class="admin-btn admin-btn-success">💾 Tümünü Kaydet</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embed Code Modal -->
+    <div id="embedCodeModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4" style="display:none;">
+        <div class="bg-gray-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4">📋 Firebase Config Kodu</h3>
+            <p class="text-gray-400 mb-4">Aşağıdaki kodu kopyalayın ve HTML dosyanızdaki <code class="bg-black/50 px-2 py-0.5 rounded">EMBEDDED_FIREBASE_CONFIG</code> değişkenini bu şekilde güncelleyin:</p>
+            <pre id="embedCodeContent" class="bg-black p-4 rounded-lg text-green-400 text-sm overflow-x-auto mb-4"></pre>
+            <div class="flex gap-3">
+                <button onclick="copyEmbedCode()" class="admin-btn admin-btn-primary">📋 Kopyala</button>
+                <button onclick="document.getElementById('embedCodeModal').style.display='none'" class="admin-btn admin-btn-secondary">Kapat</button>
             </div>
         </div>
     </div>
@@ -568,6 +618,17 @@
     </footer>
 
     <script>
+        // ==================== EMBEDDED FIREBASE CONFIG ====================
+        // ⚠️ BURAYA FİREBASE CONFIG'İNİZİ YAPIŞTIRIN!
+        // Admin panelinden "Config'i Koda Göm" butonuna tıklayarak kodu alabilirsiniz.
+        const EMBEDDED_FIREBASE_CONFIG = {
+            apiKey: "",
+            databaseURL: "",
+            projectId: "",
+            appId: ""
+        };
+        // ==================== EMBEDDED FIREBASE CONFIG END ====================
+
         // ==================== DEFAULT DATA ====================
         const defaultData = {
             hero: {
@@ -644,11 +705,25 @@
         let isLoggedIn = false;
         let firebaseDb = null;
         let firebaseConnected = false;
-        let firebaseConfig = JSON.parse(localStorage.getItem('firebaseConfig') || 'null');
+        let dataLoaded = false;
+
+        // Firebase config: önce embedded config'e bak, sonra localStorage'a
+        let firebaseConfig = null;
+        if (EMBEDDED_FIREBASE_CONFIG && EMBEDDED_FIREBASE_CONFIG.apiKey) {
+            firebaseConfig = EMBEDDED_FIREBASE_CONFIG;
+            console.log('✅ Using embedded Firebase config');
+        } else {
+            firebaseConfig = JSON.parse(localStorage.getItem('firebaseConfig') || 'null');
+            if (firebaseConfig) {
+                console.log('⚠️ Using localStorage Firebase config (only works on your device!)');
+            }
+        }
 
         // ==================== FIREBASE ====================
         function initFirebase() {
-            if (firebaseConfig && firebaseConfig.apiKey) {
+            updateFirebaseStatus('loading');
+            
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.databaseURL) {
                 try {
                     if (!firebase.apps.length) {
                         firebase.initializeApp({
@@ -660,70 +735,156 @@
                     }
                     firebaseDb = firebase.database();
                     
+                    // Connection state listener
+                    firebaseDb.ref('.info/connected').on('value', (snap) => {
+                        if (snap.val() === true) {
+                            firebaseConnected = true;
+                            updateFirebaseStatus('connected');
+                            console.log('✅ Firebase connected');
+                        } else {
+                            firebaseConnected = false;
+                            updateFirebaseStatus('disconnected');
+                            console.log('❌ Firebase disconnected');
+                        }
+                    });
+                    
                     // Listen for ALL site data changes
                     firebaseDb.ref('siteData').on('value', (snapshot) => {
                         const data = snapshot.val();
                         if (data) {
                             // Merge with defaults to ensure all fields exist
-                            siteData = {
-                                ...JSON.parse(JSON.stringify(defaultData)),
-                                ...data,
-                                hero: { ...defaultData.hero, ...(data.hero || {}) },
-                                about: { ...defaultData.about, ...(data.about || {}) },
-                                experience: { ...defaultData.experience, ...(data.experience || {}) },
-                                social: { ...defaultData.social, ...(data.social || {}) },
-                                nav: { ...defaultData.nav, ...(data.nav || {}) },
-                                projectsSection: { ...defaultData.projectsSection, ...(data.projectsSection || {}) },
-                                footer: { ...defaultData.footer, ...(data.footer || {}) }
-                            };
+                            siteData = mergeWithDefaults(data);
+                            dataLoaded = true;
                             applyAllData();
+                            hideLoading();
                             console.log('✅ All site data loaded from Firebase');
+                        } else {
+                            // Firebase'de veri yok, varsayılanları kullan
+                            console.log('⚠️ No data in Firebase, using defaults');
+                            dataLoaded = true;
+                            applyAllData();
+                            hideLoading();
                         }
+                    }, (error) => {
+                        console.error('Firebase read error:', error);
+                        updateFirebaseStatus('disconnected');
+                        loadLocalData();
+                        dataLoaded = true;
+                        applyAllData();
+                        hideLoading();
                     });
 
-                    firebaseConnected = true;
-                    updateFirebaseStatus('connected');
                 } catch (error) {
-                    console.error('Firebase error:', error);
+                    console.error('Firebase init error:', error);
                     updateFirebaseStatus('disconnected');
                     loadLocalData();
+                    dataLoaded = true;
+                    applyAllData();
+                    hideLoading();
                 }
             } else {
+                console.log('⚠️ No Firebase config, using local/default data');
                 loadLocalData();
                 updateFirebaseStatus('local');
+                dataLoaded = true;
+                applyAllData();
+                hideLoading();
             }
+        }
+
+        function mergeWithDefaults(data) {
+            return {
+                ...JSON.parse(JSON.stringify(defaultData)),
+                ...data,
+                hero: { ...defaultData.hero, ...(data.hero || {}) },
+                about: { ...defaultData.about, ...(data.about || {}) },
+                experience: { ...defaultData.experience, ...(data.experience || {}) },
+                social: { ...defaultData.social, ...(data.social || {}) },
+                nav: { ...defaultData.nav, ...(data.nav || {}) },
+                projectsSection: { ...defaultData.projectsSection, ...(data.projectsSection || {}) },
+                footer: { ...defaultData.footer, ...(data.footer || {}) },
+                skills: data.skills || defaultData.skills,
+                projects: data.projects || defaultData.projects
+            };
         }
 
         function loadLocalData() {
             const saved = localStorage.getItem('siteData');
             if (saved) {
-                const data = JSON.parse(saved);
-                // Merge with defaults
-                siteData = {
-                    ...JSON.parse(JSON.stringify(defaultData)),
-                    ...data
-                };
+                try {
+                    const data = JSON.parse(saved);
+                    siteData = mergeWithDefaults(data);
+                    console.log('✅ Loaded from localStorage');
+                } catch (e) {
+                    console.error('localStorage parse error:', e);
+                }
             }
+        }
+
+        function hideLoading() {
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) {
+                    overlay.classList.add('hidden');
+                }
+            }, 300);
         }
 
         function updateFirebaseStatus(status) {
             const el = document.getElementById('firebaseStatus');
             if (!el) return;
             el.className = `firebase-status ${status}`;
-            const labels = { connected: '🔥 Firebase Bağlı', disconnected: '❌ Bağlantı Hatası', local: '💾 Yerel Mod' };
+            const labels = { 
+                connected: '🔥 Firebase Bağlı', 
+                disconnected: '❌ Bağlantı Hatası', 
+                local: '💾 Yerel Mod',
+                loading: '⏳ Yükleniyor...'
+            };
             el.innerHTML = `<span class="status-dot"></span><span>${labels[status]}</span>`;
         }
 
         function saveFirebaseConfig() {
-            firebaseConfig = {
-                apiKey: document.getElementById('fbApiKey').value,
-                databaseURL: document.getElementById('fbDatabaseUrl').value,
-                projectId: document.getElementById('fbProjectId').value,
-                appId: document.getElementById('fbAppId').value
+            const newConfig = {
+                apiKey: document.getElementById('fbApiKey').value.trim(),
+                databaseURL: document.getElementById('fbDatabaseUrl').value.trim(),
+                projectId: document.getElementById('fbProjectId').value.trim(),
+                appId: document.getElementById('fbAppId').value.trim()
             };
-            localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
+            
+            if (!newConfig.apiKey || !newConfig.databaseURL) {
+                showToast('❌ API Key ve Database URL zorunlu!');
+                return;
+            }
+            
+            localStorage.setItem('firebaseConfig', JSON.stringify(newConfig));
+            firebaseConfig = newConfig;
             showToast('✅ Firebase ayarları kaydedildi! Sayfa yenileniyor...');
             setTimeout(() => location.reload(), 1500);
+        }
+
+        function showEmbedCode() {
+            const config = {
+                apiKey: document.getElementById('fbApiKey').value.trim() || firebaseConfig?.apiKey || '',
+                databaseURL: document.getElementById('fbDatabaseUrl').value.trim() || firebaseConfig?.databaseURL || '',
+                projectId: document.getElementById('fbProjectId').value.trim() || firebaseConfig?.projectId || '',
+                appId: document.getElementById('fbAppId').value.trim() || firebaseConfig?.appId || ''
+            };
+            
+            const code = `const EMBEDDED_FIREBASE_CONFIG = {
+    apiKey: "${config.apiKey}",
+    databaseURL: "${config.databaseURL}",
+    projectId: "${config.projectId}",
+    appId: "${config.appId}"
+};`;
+            
+            document.getElementById('embedCodeContent').textContent = code;
+            document.getElementById('embedCodeModal').style.display = 'flex';
+        }
+
+        function copyEmbedCode() {
+            const code = document.getElementById('embedCodeContent').textContent;
+            navigator.clipboard.writeText(code);
+            showToast('📋 Kod kopyalandı! HTML dosyanızdaki EMBEDDED_FIREBASE_CONFIG değişkenini bu kodla değiştirin.');
         }
 
         function testFirebase() {
@@ -732,13 +893,13 @@
                     showToast(snap.val() ? '✅ Firebase bağlantısı başarılı!' : '❌ Bağlantı yok!');
                 });
             } else {
-                showToast('❌ Firebase yapılandırılmamış!');
+                showToast('❌ Firebase yapılandırılmamış veya bağlı değil!');
             }
         }
 
         function disconnectFirebase() {
             localStorage.removeItem('firebaseConfig');
-            showToast('🔌 Firebase bağlantısı kesildi!');
+            showToast('🔌 Firebase bağlantısı kesildi! (Not: Embedded config varsa hala çalışır)');
             setTimeout(() => location.reload(), 1500);
         }
 
@@ -881,7 +1042,7 @@
                     .catch(err => showToast('❌ Hata: ' + err.message));
             } else {
                 localStorage.setItem('siteData', JSON.stringify(dataToSave));
-                showToast('💾 Tüm veriler yerel olarak kaydedildi!');
+                showToast('💾 Tüm veriler yerel olarak kaydedildi! (Not: Diğer kullanıcılar göremez)');
             }
             
             applyAllData();
@@ -976,13 +1137,13 @@
             // Site Title
             document.getElementById('siteTitle').value = siteData.siteTitle;
 
-            // Firebase
-            if (firebaseConfig) {
-                document.getElementById('fbApiKey').value = firebaseConfig.apiKey || '';
-                document.getElementById('fbDatabaseUrl').value = firebaseConfig.databaseURL || '';
-                document.getElementById('fbProjectId').value = firebaseConfig.projectId || '';
-                document.getElementById('fbAppId').value = firebaseConfig.appId || '';
-            }
+            // Firebase - önce embedded config'e bak, sonra localStorage
+            const configToShow = EMBEDDED_FIREBASE_CONFIG?.apiKey ? EMBEDDED_FIREBASE_CONFIG : 
+                                 JSON.parse(localStorage.getItem('firebaseConfig') || '{}');
+            document.getElementById('fbApiKey').value = configToShow.apiKey || '';
+            document.getElementById('fbDatabaseUrl').value = configToShow.databaseURL || '';
+            document.getElementById('fbProjectId').value = configToShow.projectId || '';
+            document.getElementById('fbAppId').value = configToShow.appId || '';
 
             // Projects
             renderProjectsAdmin();
@@ -1193,10 +1354,16 @@
 
         // ==================== RENDER PROJECTS ====================
         function renderProjects() {
-            document.getElementById('projectsGrid').innerHTML = siteData.projects.map(p => `
+            const grid = document.getElementById('projectsGrid');
+            if (!siteData.projects || siteData.projects.length === 0) {
+                grid.innerHTML = '<p class="text-sub text-center col-span-3">Henüz proje eklenmemiş.</p>';
+                return;
+            }
+            
+            grid.innerHTML = siteData.projects.map(p => `
                 <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(${p.id})">
                     <div class="aspect-video overflow-hidden">
-                        <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover">
+                        <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'">
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
@@ -1220,15 +1387,23 @@
             container.innerHTML = '';
             const allImages = [];
 
-            siteData.projects.forEach(p => {
-                if (p.thumbnail) allImages.push(p.thumbnail);
-                if (p.screenshots) p.screenshots.forEach(s => { if (!allImages.includes(s)) allImages.push(s); });
-            });
+            if (siteData.projects) {
+                siteData.projects.forEach(p => {
+                    if (p.thumbnail) allImages.push(p.thumbnail);
+                    if (p.screenshots) p.screenshots.forEach(s => { if (!allImages.includes(s)) allImages.push(s); });
+                });
+            }
+
+            if (allImages.length === 0) {
+                // Varsayılan bir arka plan ekle
+                container.innerHTML = '<div class="hero-slide active" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);"></div>';
+                return;
+            }
 
             allImages.forEach((img, i) => {
                 const slide = document.createElement('div');
                 slide.className = `hero-slide ${i === 0 ? 'active' : ''}`;
-                slide.innerHTML = `<img src="${img}" alt="Screenshot">`;
+                slide.innerHTML = `<img src="${img}" alt="Screenshot" onerror="this.parentElement.style.display='none'">`;
                 container.appendChild(slide);
             });
 
@@ -1275,7 +1450,7 @@
                 <div class="grid lg:grid-cols-2 gap-8">
                     <div>
                         <div id="mainMedia" class="w-full aspect-video mb-4 bg-black rounded-lg overflow-hidden">
-                            <img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover">
+                            <img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x450?text=No+Image'">
                         </div>
                         ${(project.screenshots?.length || project.videos?.length) ? `
                             <div class="grid grid-cols-4 gap-2">
@@ -1286,7 +1461,7 @@
                                     </div>
                                 `).join('') || ''}
                                 ${project.screenshots?.slice(0, 4 - (project.videos?.length || 0)).map(s => `
-                                    <img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 rounded" onclick="showImage('${s}')">
+                                    <img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 rounded" onclick="showImage('${s}')" onerror="this.style.display='none'">
                                 `).join('') || ''}
                             </div>
                         ` : ''}
@@ -1349,7 +1524,6 @@
 
         // ==================== INIT ====================
         initFirebase();
-        applyAllData();
         document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
     </script>
 </body>
