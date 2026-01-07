@@ -6,7 +6,6 @@
     <title>Game Developer Portfolio</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
@@ -79,400 +78,374 @@
             background-color: var(--accent);
             color: var(--bg-primary);
         }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
 
         .scroll-reveal {
             opacity: 0;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(60px);
         }
         .scroll-reveal.revealed {
             opacity: 1;
+            transform: translateY(0);
         }
-        .scroll-reveal { transform: translateY(60px); }
-        .scroll-reveal.revealed { transform: translateY(0); }
 
-        .hero-slideshow {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-        }
-        .hero-slide {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-        .hero-slide.active {
-            opacity: 1;
-        }
-        .hero-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.3) blur(2px);
-        }
+        .hero-slideshow { position: absolute; inset: 0; overflow: hidden; }
+        .hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.5s ease-in-out; }
+        .hero-slide.active { opacity: 1; }
+        .hero-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.3) blur(2px); }
 
         .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
+            position: fixed; bottom: 20px; left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background-color: var(--accent);
-            color: var(--bg-primary);
-            padding: 16px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            z-index: 100;
-            opacity: 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background-color: var(--accent); color: var(--bg-primary);
+            padding: 16px 24px; border-radius: 8px; font-weight: 600;
+            z-index: 100; opacity: 0; transition: all 0.3s ease;
         }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
         .theme-toggle {
-            position: relative;
-            width: 56px;
-            height: 28px;
-            border-radius: 14px;
-            background-color: var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            position: relative; width: 56px; height: 28px; border-radius: 14px;
+            background-color: var(--border-color); cursor: pointer;
         }
         .theme-toggle-circle {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            transition: transform 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: 2px; left: 2px; width: 24px; height: 24px;
+            border-radius: 50%; background-color: var(--accent); transition: transform 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
         }
-        .dark .theme-toggle-circle {
-            transform: translateX(28px);
-        }
+        .dark .theme-toggle-circle { transform: translateX(28px); }
 
-        .nav-bg {
-            background-color: var(--bg-primary);
-            border-color: var(--border-color);
-        }
-
-        .section-primary {
-            background-color: var(--bg-primary);
-        }
-        .section-secondary {
-            background-color: var(--bg-secondary);
-        }
-
-        .card-bg {
-            background-color: var(--bg-card);
-        }
-
-        .text-main {
-            color: var(--text-primary);
-        }
-        .text-sub {
-            color: var(--text-secondary);
-        }
-
-        .border-main {
-            border-color: var(--border-color);
-        }
-        .border-accent {
-            border-color: var(--accent);
-        }
+        .nav-bg { background-color: var(--bg-primary); border-color: var(--border-color); }
+        .section-primary { background-color: var(--bg-primary); }
+        .section-secondary { background-color: var(--bg-secondary); }
+        .card-bg { background-color: var(--bg-card); }
+        .text-main { color: var(--text-primary); }
+        .text-sub { color: var(--text-secondary); }
+        .border-main { border-color: var(--border-color); }
 
         .social-btn {
-            border-color: var(--accent);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+            border-color: var(--accent); color: var(--text-primary); transition: all 0.3s ease;
         }
         .social-btn:hover {
-            background-color: var(--accent);
-            color: var(--bg-primary);
+            background-color: var(--accent); color: var(--bg-primary);
         }
 
-        /* Admin Panel Styles */
+        /* Admin Panel */
         .admin-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
         }
-        .admin-overlay.show {
-            display: flex;
-        }
+        .admin-overlay.show { display: flex; }
         .admin-panel {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            width: 95%;
-            max-width: 1200px;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background: #111; border: 1px solid #333; border-radius: 16px;
+            width: 95%; max-width: 1400px; max-height: 90vh; overflow: hidden;
+            display: flex; flex-direction: column;
         }
         .admin-header {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 24px; display: flex; justify-content: space-between; align-items: center;
         }
-        .admin-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .admin-body { padding: 24px; overflow-y: auto; flex: 1; }
         .admin-input {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            margin-bottom: 12px;
+            width: 100%; padding: 12px 16px; background: #1a1a1a; border: 1px solid #333;
+            border-radius: 8px; color: white; margin-bottom: 12px; font-size: 14px;
         }
-        .admin-input:focus {
-            outline: none;
-            border-color: #ff6b6b;
-        }
-        .admin-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
+        .admin-input:focus { outline: none; border-color: #667eea; }
+        .admin-textarea { min-height: 100px; resize: vertical; }
         .admin-btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding: 10px 20px; border-radius: 8px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; font-size: 14px;
         }
         .admin-btn-primary {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
-            color: white;
-            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none;
         }
-        .admin-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        .admin-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .admin-btn-secondary { background: #333; color: white; border: 1px solid #444; }
+        .admin-btn-danger { background: #dc2626; color: white; border: none; }
+        .admin-btn-success { background: #059669; color: white; border: none; }
+
+        .admin-section {
+            background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+            padding: 20px; margin-bottom: 16px;
         }
-        .admin-btn-secondary {
-            background: #333;
-            color: white;
-            border: 1px solid #555;
+        .admin-section-title {
+            font-size: 16px; font-weight: 700; color: #667eea; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
         }
-        .admin-btn-danger {
-            background: #ff4444;
-            color: white;
-            border: none;
-        }
-        .project-edit-card {
-            background: #252525;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .password-modal {
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #333;
-        }
-        .admin-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
+        .admin-label { display: block; color: #888; font-size: 12px; margin-bottom: 6px; font-weight: 500; }
+        .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .admin-tab {
-            padding: 10px 20px;
-            background: transparent;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
+            padding: 10px 20px; background: #222; border: 1px solid #333;
+            color: #888; cursor: pointer; border-radius: 8px; transition: all 0.2s; font-size: 14px;
         }
-        .admin-tab.active {
-            background: #ff6b6b;
-            color: white;
+        .admin-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; }
+        .admin-tab:hover:not(.active) { background: #333; color: white; }
+
+        .skill-item, .exp-item, .social-item {
+            display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
         }
-        .admin-tab:hover:not(.active) {
-            background: #333;
-            color: white;
+        .skill-item input, .exp-item input, .social-item input { flex: 1; margin-bottom: 0; }
+
+        .project-card-admin {
+            background: #222; border: 1px solid #333; border-radius: 12px;
+            padding: 16px; margin-bottom: 12px;
         }
+        .project-card-admin-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+        }
+
         .firebase-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+            border-radius: 20px; font-size: 12px; font-weight: 500;
         }
-        .firebase-status.connected {
-            background: rgba(0,255,0,0.2);
-            color: #00ff00;
+        .firebase-status.connected { background: rgba(5,150,105,0.2); color: #10b981; }
+        .firebase-status.disconnected { background: rgba(220,38,38,0.2); color: #ef4444; }
+        .firebase-status.local { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
+        .connected .status-dot { background: #10b981; }
+        .disconnected .status-dot { background: #ef4444; }
+        .local .status-dot { background: #f59e0b; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .password-modal {
+            background: #111; padding: 40px; border-radius: 16px;
+            text-align: center; border: 1px solid #333; max-width: 400px;
         }
-        .firebase-status.disconnected {
-            background: rgba(255,0,0,0.2);
-            color: #ff6b6b;
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .add-btn {
+            display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+            background: #222; border: 1px dashed #444; border-radius: 8px;
+            color: #888; cursor: pointer; font-size: 13px; transition: all 0.2s;
         }
-        .firebase-status.local {
-            background: rgba(255,165,0,0.2);
-            color: #ffa500;
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        .connected .status-dot { background: #00ff00; }
-        .disconnected .status-dot { background: #ff6b6b; }
-        .local .status-dot { background: #ffa500; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
+        .add-btn:hover { border-color: #667eea; color: #667eea; }
     </style>
 </head>
 <body class="dark">
-    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
-    <!-- Admin Password Modal -->
+    <!-- Admin Panel -->
     <div id="adminOverlay" class="admin-overlay">
         <div id="passwordModal" class="password-modal">
-            <h2 class="text-2xl font-bold text-white mb-2">🔐 Admin Girişi</h2>
+            <div class="text-4xl mb-4">🔐</div>
+            <h2 class="text-2xl font-bold text-white mb-2">Admin Girişi</h2>
             <p class="text-gray-400 mb-6">Yönetim paneline erişmek için şifre girin</p>
             <input type="password" id="adminPassword" class="admin-input" placeholder="Şifre..." onkeypress="if(event.key==='Enter')checkPassword()">
             <div class="flex gap-3 justify-center mt-4">
                 <button onclick="checkPassword()" class="admin-btn admin-btn-primary">Giriş Yap</button>
                 <button onclick="closeAdmin()" class="admin-btn admin-btn-secondary">İptal</button>
             </div>
-            <p class="text-gray-500 text-sm mt-4">Varsayılan şifre: admin123</p>
         </div>
 
-        <!-- Admin Panel -->
         <div id="adminPanel" class="admin-panel" style="display: none;">
             <div class="admin-header">
                 <div class="flex items-center gap-4">
-                    <h2 class="text-xl font-bold text-white">⚙️ Admin Paneli</h2>
+                    <h2 class="text-xl font-bold text-white">⚙️ Site Yönetim Paneli</h2>
                     <div id="firebaseStatus" class="firebase-status local">
                         <span class="status-dot"></span>
                         <span>Yerel Mod</span>
                     </div>
                 </div>
-                <button onclick="closeAdmin()" class="text-white hover:text-gray-300 text-2xl">&times;</button>
+                <button onclick="closeAdmin()" class="text-white/80 hover:text-white text-3xl leading-none">&times;</button>
             </div>
             <div class="admin-body">
                 <div class="admin-tabs">
-                    <button class="admin-tab active" onclick="switchTab('projects')">📁 Projeler</button>
-                    <button class="admin-tab" onclick="switchTab('settings')">⚙️ Ayarlar</button>
+                    <button class="admin-tab active" onclick="switchTab('hero')">🏠 Hero</button>
+                    <button class="admin-tab" onclick="switchTab('about')">👤 Hakkımda</button>
+                    <button class="admin-tab" onclick="switchTab('skills')">🛠️ Yetenekler</button>
+                    <button class="admin-tab" onclick="switchTab('projects')">📁 Projeler</button>
+                    <button class="admin-tab" onclick="switchTab('footer')">📝 Footer</button>
+                    <button class="admin-tab" onclick="switchTab('social')">🔗 Sosyal</button>
                     <button class="admin-tab" onclick="switchTab('firebase')">🔥 Firebase</button>
+                    <button class="admin-tab" onclick="switchTab('settings')">⚙️ Ayarlar</button>
+                </div>
+
+                <!-- Hero Tab -->
+                <div id="tab-hero" class="tab-content">
+                    <div class="admin-section">
+                        <div class="admin-section-title">🏠 Hero Bölümü</div>
+                        <div class="grid-2">
+                            <div>
+                                <label class="admin-label">Üst Başlık (Subtitle)</label>
+                                <input type="text" id="heroSubtitle" class="admin-input" placeholder="Game Developer & Programmer">
+                            </div>
+                            <div>
+                                <label class="admin-label">Ana Başlık (İsim)</label>
+                                <input type="text" id="heroTitle" class="admin-input" placeholder="Yasin Sen">
+                            </div>
+                        </div>
+                        <label class="admin-label">Açıklama</label>
+                        <textarea id="heroDesc" class="admin-input admin-textarea" placeholder="Açıklama metni..."></textarea>
+                        <label class="admin-label">Buton Yazısı</label>
+                        <input type="text" id="heroButton" class="admin-input" placeholder="Explore Projects">
+                    </div>
+                </div>
+
+                <!-- About Tab -->
+                <div id="tab-about" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">👤 Hakkımda Bölümü</div>
+                        <label class="admin-label">Başlık</label>
+                        <input type="text" id="aboutTitle" class="admin-input" placeholder="About Me">
+                        <label class="admin-label">Paragraf 1</label>
+                        <textarea id="aboutText1" class="admin-input admin-textarea"></textarea>
+                        <label class="admin-label">Paragraf 2</label>
+                        <textarea id="aboutText2" class="admin-input admin-textarea"></textarea>
+                    </div>
+                </div>
+
+                <!-- Skills Tab -->
+                <div id="tab-skills" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">🛠️ Yetenekler</div>
+                        <div id="skillsList"></div>
+                        <button onclick="addSkill()" class="add-btn">+ Yetenek Ekle</button>
+                    </div>
+                    <div class="admin-section">
+                        <div class="admin-section-title">📊 Deneyim Başlıkları</div>
+                        <label class="admin-label">Deneyim Başlığı</label>
+                        <input type="text" id="expTitle" class="admin-input" placeholder="Experience Highlights">
+                        <div id="expList"></div>
+                        <button onclick="addExp()" class="add-btn">+ Deneyim Ekle</button>
+                    </div>
                 </div>
 
                 <!-- Projects Tab -->
-                <div id="tab-projects" class="tab-content">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-white">Projeler</h3>
-                        <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
+                <div id="tab-projects" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">📁 Proje Bölümü Başlıkları</div>
+                        <div class="grid-2">
+                            <div>
+                                <label class="admin-label">Başlık</label>
+                                <input type="text" id="projectsTitle" class="admin-input" placeholder="My Projects">
+                            </div>
+                            <div>
+                                <label class="admin-label">Alt Başlık</label>
+                                <input type="text" id="projectsSubtitle" class="admin-input" placeholder="A collection of games...">
+                            </div>
+                        </div>
                     </div>
-                    <div id="projectsList"></div>
+                    <div class="admin-section">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="admin-section-title mb-0">📁 Projeler</div>
+                            <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
+                        </div>
+                        <div id="projectsList"></div>
+                    </div>
                 </div>
 
-                <!-- Settings Tab -->
-                <div id="tab-settings" class="tab-content" style="display: none;">
-                    <h3 class="text-lg font-semibold text-white mb-4">Site Ayarları</h3>
-                    <div class="project-edit-card">
-                        <label class="text-gray-400 text-sm">Admin Şifresi</label>
-                        <input type="password" id="newPassword" class="admin-input" placeholder="Yeni şifre...">
-                        <button onclick="changePassword()" class="admin-btn admin-btn-primary">Şifreyi Değiştir</button>
+                <!-- Footer Tab -->
+                <div id="tab-footer" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">📝 Footer</div>
+                        <label class="admin-label">Copyright Metni</label>
+                        <input type="text" id="footerCopyright" class="admin-input" placeholder="© 2024 Game Developer Portfolio...">
+                        <label class="admin-label">Alt Metin</label>
+                        <input type="text" id="footerSubtext" class="admin-input" placeholder="Built with passion for gaming">
                     </div>
-                    <div class="project-edit-card">
-                        <label class="text-gray-400 text-sm">Hakkımda Başlık</label>
-                        <input type="text" id="aboutTitle" class="admin-input" value="About Me">
-                        <label class="text-gray-400 text-sm">Hakkımda Metin 1</label>
-                        <textarea id="aboutText1" class="admin-input admin-textarea"></textarea>
-                        <label class="text-gray-400 text-sm">Hakkımda Metin 2</label>
-                        <textarea id="aboutText2" class="admin-input admin-textarea"></textarea>
-                        <button onclick="saveAboutSettings()" class="admin-btn admin-btn-primary">Kaydet</button>
+                </div>
+
+                <!-- Social Tab -->
+                <div id="tab-social" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">🔗 Sosyal Medya Linkleri</div>
+                        <div class="grid-2">
+                            <div>
+                                <label class="admin-label">GitHub URL</label>
+                                <input type="text" id="socialGithub" class="admin-input" placeholder="https://github.com/...">
+                            </div>
+                            <div>
+                                <label class="admin-label">Gmail Adresi</label>
+                                <input type="text" id="socialGmail" class="admin-input" placeholder="email@gmail.com">
+                            </div>
+                            <div>
+                                <label class="admin-label">Discord Kullanıcı Adı</label>
+                                <input type="text" id="socialDiscord" class="admin-input" placeholder="username">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <div class="admin-section-title">🔗 Navigasyon</div>
+                        <div class="grid-2">
+                            <div>
+                                <label class="admin-label">About Link Yazısı</label>
+                                <input type="text" id="navAbout" class="admin-input" placeholder="About">
+                            </div>
+                            <div>
+                                <label class="admin-label">Projects Link Yazısı</label>
+                                <input type="text" id="navProjects" class="admin-input" placeholder="Projects">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Firebase Tab -->
-                <div id="tab-firebase" class="tab-content" style="display: none;">
-                    <div class="project-edit-card">
-                        <h3 class="text-lg font-semibold text-white mb-4">🔥 Firebase Bağlantısı</h3>
-                        <p class="text-gray-400 mb-4">Firebase Realtime Database kullanarak verileriniz bulutta saklanır ve herkes değişiklikleri görebilir.</p>
-                        
-                        <div class="bg-yellow-900/30 border border-yellow-600 rounded-lg p-4 mb-4">
-                            <h4 class="text-yellow-400 font-semibold mb-2">📋 Firebase Kurulum Adımları:</h4>
-                            <ol class="text-gray-300 text-sm space-y-2">
-                                <li>1. <a href="https://console.firebase.google.com" target="_blank" class="text-blue-400 underline">Firebase Console</a>'a gidin</li>
-                                <li>2. Yeni proje oluşturun</li>
-                                <li>3. Realtime Database oluşturun</li>
-                                <li>4. Rules'ı şu şekilde ayarlayın: <code class="bg-black/50 px-2 py-1 rounded">{"rules": {".read": true, ".write": true}}</code></li>
-                                <li>5. Project Settings > Web App ekleyin</li>
-                                <li>6. Config bilgilerini aşağıya yapıştırın</li>
+                <div id="tab-firebase" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">🔥 Firebase Bağlantısı</div>
+                        <div class="bg-yellow-900/20 border border-yellow-600/50 rounded-lg p-4 mb-4">
+                            <h4 class="text-yellow-400 font-semibold mb-2">📋 Kurulum Adımları:</h4>
+                            <ol class="text-gray-300 text-sm space-y-1">
+                                <li>1. <a href="https://console.firebase.google.com" target="_blank" class="text-blue-400 underline">Firebase Console</a>'a git</li>
+                                <li>2. Yeni proje oluştur</li>
+                                <li>3. Realtime Database oluştur (Build > Realtime Database)</li>
+                                <li>4. Rules: <code class="bg-black/50 px-2 py-0.5 rounded text-xs">{"rules": {".read": true, ".write": true}}</code></li>
+                                <li>5. Project Settings > Web App ekle</li>
+                                <li>6. Config bilgilerini aşağıya yapıştır</li>
                             </ol>
                         </div>
-
-                        <label class="text-gray-400 text-sm">API Key</label>
-                        <input type="text" id="fbApiKey" class="admin-input" placeholder="AIza...">
-                        
-                        <label class="text-gray-400 text-sm">Auth Domain</label>
-                        <input type="text" id="fbAuthDomain" class="admin-input" placeholder="your-app.firebaseapp.com">
-                        
-                        <label class="text-gray-400 text-sm">Database URL</label>
-                        <input type="text" id="fbDatabaseUrl" class="admin-input" placeholder="https://your-app-default-rtdb.firebaseio.com">
-                        
-                        <label class="text-gray-400 text-sm">Project ID</label>
-                        <input type="text" id="fbProjectId" class="admin-input" placeholder="your-app">
-                        
-                        <label class="text-gray-400 text-sm">Storage Bucket</label>
-                        <input type="text" id="fbStorageBucket" class="admin-input" placeholder="your-app.appspot.com">
-                        
-                        <label class="text-gray-400 text-sm">Messaging Sender ID</label>
-                        <input type="text" id="fbMessagingSenderId" class="admin-input" placeholder="123456789">
-                        
-                        <label class="text-gray-400 text-sm">App ID</label>
-                        <input type="text" id="fbAppId" class="admin-input" placeholder="1:123:web:abc">
-
+                        <div class="grid-2">
+                            <div>
+                                <label class="admin-label">API Key</label>
+                                <input type="text" id="fbApiKey" class="admin-input" placeholder="AIza...">
+                            </div>
+                            <div>
+                                <label class="admin-label">Project ID</label>
+                                <input type="text" id="fbProjectId" class="admin-input" placeholder="your-app">
+                            </div>
+                            <div>
+                                <label class="admin-label">Database URL</label>
+                                <input type="text" id="fbDatabaseUrl" class="admin-input" placeholder="https://your-app-default-rtdb.firebaseio.com">
+                            </div>
+                            <div>
+                                <label class="admin-label">App ID</label>
+                                <input type="text" id="fbAppId" class="admin-input" placeholder="1:123:web:abc">
+                            </div>
+                        </div>
                         <div class="flex gap-3 mt-4">
-                            <button onclick="saveFirebaseConfig()" class="admin-btn admin-btn-primary">Firebase'i Bağla</button>
-                            <button onclick="testFirebaseConnection()" class="admin-btn admin-btn-secondary">Bağlantıyı Test Et</button>
+                            <button onclick="saveFirebaseConfig()" class="admin-btn admin-btn-primary">🔥 Firebase'i Bağla</button>
+                            <button onclick="testFirebase()" class="admin-btn admin-btn-secondary">Test Et</button>
                             <button onclick="disconnectFirebase()" class="admin-btn admin-btn-danger">Bağlantıyı Kes</button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Settings Tab -->
+                <div id="tab-settings" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">🔐 Şifre Değiştir</div>
+                        <label class="admin-label">Yeni Şifre</label>
+                        <input type="password" id="newPassword" class="admin-input" placeholder="Yeni şifre...">
+                        <button onclick="changePassword()" class="admin-btn admin-btn-primary">Şifreyi Değiştir</button>
+                    </div>
+                    <div class="admin-section">
+                        <div class="admin-section-title">🎨 Site Başlığı</div>
+                        <label class="admin-label">Sayfa Başlığı (Browser Tab)</label>
+                        <input type="text" id="siteTitle" class="admin-input" placeholder="Game Developer Portfolio">
+                    </div>
+                </div>
             </div>
-            <div class="p-4 border-t border-gray-700 flex justify-between">
+            <div class="p-4 border-t border-gray-800 flex justify-between items-center bg-black/50">
                 <span class="text-gray-500 text-sm">Ctrl+Shift+P ile açılır</span>
-                <button onclick="saveAllChanges()" class="admin-btn admin-btn-primary">💾 Tüm Değişiklikleri Kaydet</button>
+                <div class="flex gap-3">
+                    <button onclick="resetToDefault()" class="admin-btn admin-btn-secondary">🔄 Varsayılana Dön</button>
+                    <button onclick="saveAllData()" class="admin-btn admin-btn-success">💾 Tümünü Kaydet</button>
+                </div>
             </div>
         </div>
     </div>
@@ -482,8 +455,8 @@
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#hero" class="text-xl font-bold tracking-tight text-main"></a>
             <div class="flex items-center gap-6">
-                <a href="#about" class="text-sm font-medium text-main hover:text-sub transition-colors">About</a>
-                <a href="#projects" class="text-sm font-medium text-main hover:text-sub transition-colors">Projects</a>
+                <a href="#about" id="navAboutDisplay" class="text-sm font-medium text-main hover:text-sub transition-colors">About</a>
+                <a href="#projects" id="navProjectsDisplay" class="text-sm font-medium text-main hover:text-sub transition-colors">Projects</a>
                 <div class="theme-toggle" onclick="toggleTheme()">
                     <div class="theme-toggle-circle">
                         <svg class="w-4 h-4 sun-icon" fill="currentColor" viewBox="0 0 24 24" style="color: var(--bg-primary)">
@@ -505,10 +478,10 @@
             <div class="absolute top-1/2 left-1/3 w-32 h-32 border border-white/20 -rotate-12"></div>
         </div>
         <div class="text-center z-10 px-6">
-            <p class="text-gray-400 uppercase tracking-widest text-sm mb-4">Game Developer & Programmer</p>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">Yasin Sen</h1>
-            <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-8">Hi, I'm Yasin. I've been developing games for 5 years, crafting both multiplayer and singleplayer experiences.</p>
-            <a href="#projects" class="inline-block border-2 border-white px-8 py-3 font-semibold hover:bg-white hover:text-black transition-all duration-300">Explore Projects</a>
+            <p id="heroSubtitleDisplay" class="text-gray-400 uppercase tracking-widest text-sm mb-4">Game Developer & Programmer</p>
+            <h1 id="heroTitleDisplay" class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">Yasin Sen</h1>
+            <p id="heroDescDisplay" class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-8">Hi, I'm Yasin. I've been developing games for 5 years, crafting both multiplayer and singleplayer experiences.</p>
+            <a href="#projects" id="heroButtonDisplay" class="inline-block border-2 border-white px-8 py-3 font-semibold hover:bg-white hover:text-black transition-all duration-300">Explore Projects</a>
         </div>
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce z-10">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -523,52 +496,16 @@
             <div class="grid md:grid-cols-2 gap-16 items-center">
                 <div class="scroll-reveal">
                     <h2 id="aboutTitleDisplay" class="text-4xl font-bold mb-6 text-main">About Me</h2>
-                    <p id="aboutText1Display" class="text-sub text-lg leading-relaxed mb-6">I'm Yasin, a game developer with 6 years of experience working on a variety of game genres, from single-player adventures to multiplayer experiences. I enjoy tackling diverse challenges in game design and bringing ideas to life through interactive mechanics and gameplay systems</p>
-                    <p id="aboutText2Display" class="text-sub text-lg leading-relaxed mb-8">Six years ago, I started with a small, fun project just to experiment and learn. Since then, I've explored a wide range of game genres, from single-player adventures to multiplayer experiences, constantly pushing myself to try new ideas and improve my craft. Every project has taught me something new and shaped the way I approach game design today.</p>
-                    <div class="flex gap-4">
-                        <a href="https://github.com/yasib48" target="_blank" class="social-btn w-10 h-10 border flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                        </a>
-                        <button onclick="showContactInfo('gmail', 'yasinsen.job@gmail.com')" class="social-btn w-10 h-10 border flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
-                        </button>
-                        <button onclick="showContactInfo('discord', 'yasib')" class="social-btn w-10 h-10 border flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
-                        </button>
-                    </div>
+                    <p id="aboutText1Display" class="text-sub text-lg leading-relaxed mb-6"></p>
+                    <p id="aboutText2Display" class="text-sub text-lg leading-relaxed mb-8"></p>
+                    <div id="socialButtons" class="flex gap-4"></div>
                 </div>
                 <div class="scroll-reveal">
                     <h3 class="text-xl font-bold mb-4 text-main">Skills & Technologies</h3>
-                    <div class="flex flex-wrap gap-3">
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Unity</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Unreal Engine</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">C#</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Blender</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">3D Modeling</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Level Design</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Shader Programming</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">AI Systems</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Multiplayer</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Git</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Aseprite</span>
-                        <span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">Game Design</span>
-                    </div>
+                    <div id="skillsDisplay" class="flex flex-wrap gap-3"></div>
                     <div class="mt-8 p-6 card-bg rounded-lg shadow-sm border border-main">
-                        <h4 class="font-bold mb-3 text-main">Experience Highlights</h4>
-                        <ul class="space-y-2 text-sub">
-                            <li class="flex items-center gap-2">
-                                <span class="w-2 h-2 bg-current"></span>
-                                2+ years of multiplayer experience (FishNet, Photon, Mirror)
-                            </li>
-                            <li class="flex items-center gap-2">
-                                <span class="w-2 h-2 bg-current"></span>
-                                Cross-genre development
-                            </li>
-                            <li class="flex items-center gap-2">
-                                <span class="w-2 h-2 bg-current"></span>
-                                Procedural animation experience
-                            </li>
-                        </ul>
+                        <h4 id="expTitleDisplay" class="font-bold mb-3 text-main">Experience Highlights</h4>
+                        <ul id="expDisplay" class="space-y-2 text-sub"></ul>
                     </div>
                 </div>
             </div>
@@ -579,8 +516,8 @@
     <section id="projects" class="py-24 section-secondary">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-16 scroll-reveal">
-                <h2 class="text-4xl font-bold mb-4 text-main">My Projects</h2>
-                <p class="text-sub text-lg">A collection of games I've developed and contributed to</p>
+                <h2 id="projectsTitleDisplay" class="text-4xl font-bold mb-4 text-main">My Projects</h2>
+                <p id="projectsSubtitleDisplay" class="text-sub text-lg"></p>
             </div>
             <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
@@ -602,111 +539,310 @@
     <!-- Footer -->
     <footer class="bg-black text-white py-12">
         <div class="max-w-6xl mx-auto px-6 text-center">
-            <p class="text-gray-400 mb-4">© 2024 Game Developer Portfolio. All rights reserved.</p>
-            <p class="text-sm text-gray-500">Built with passion for gaming</p>
+            <p id="footerCopyrightDisplay" class="text-gray-400 mb-4"></p>
+            <p id="footerSubtextDisplay" class="text-sm text-gray-500"></p>
         </div>
     </footer>
 
     <script>
-        // Default Projects Data
-        const defaultProjects = [
-            {
-                id: 1,
-                title: "Super Golf",
-                shortDesc: "A multiplayer golf game with Steam integration",
-                fullDesc: "This is a multiplayer arcade golf game developed entirely by me as a solo project. From the initial concept to implementation, I worked on all aspects of the game, focusing on creating a fast, responsive, and enjoyable arcade experience. The multiplayer infrastructure is built using FishNet, enabling real-time matches with friends or online opponents.\n\nThe ball physics system was developed by combining custom-written code with Unity's Rigidbody-based physics. This approach allowed precise control over movement, collisions, and shot feedback, ensuring a consistent and satisfying arcade feel while maintaining reliable physical behavior. Gameplay mechanics are continuously tested and refined to provide clear feedback and smooth controls.\n\nThe project is still a work in progress and is actively being developed. A Steam release is planned in the near future, with Steam and Steamworks integration supporting online features and distribution. Overall, this project represents my hands-on experience working independently across different areas of game development, from multiplayer systems and gameplay mechanics to preparing a game for release.",
-                thumbnail: "./assets/Map1.png",
-                screenshots: ["./assets/Map1.png", "./assets/MainMenu.png", "./assets/Lobi.png"],
-                videos: [],
-                technologies: ["Unity", "Blender", "C#", "FishNet", "Steam", "Shader Programming", "Figma"],
-                platforms: ["PC"],
-                year: "2025 - 2026",
-                downloadLink: ""
+        // ==================== DEFAULT DATA ====================
+        const defaultData = {
+            hero: {
+                subtitle: "Game Developer & Programmer",
+                title: "Yasin Sen",
+                desc: "Hi, I'm Yasin. I've been developing games for 5 years, crafting both multiplayer and singleplayer experiences.",
+                button: "Explore Projects"
             },
-            {
-                id: 2,
-                title: "Level Evil",
-                shortDesc: "Demo of a minimalist pixel art platformer showcasing level design, player movement, and core gameplay mechanics.",
-                fullDesc: "This demo represents a small but highly challenging level I designed to explore precise movement and timing mechanics. The game intentionally features a difficult structure, crafted to test player reflexes and patience. I created it within the concept of a 'rage bait' experience, focusing on frustration-driven engagement that encourages players to learn through trial and error. Despite its minimalistic pixel art style, the design emphasizes tight control, risk-reward decisions, and level layouts that challenge conventional platforming expectations. This project highlights my approach to designing gameplay systems that provoke strong emotional responses while remaining mechanically clear and satisfying.",
-                thumbnail: "./assets/LDLevel1.png",
-                screenshots: ["./assets/LDLevel1.png", "./assets/LDLevel2.png", "./assets/LDLevel3.png"],
-                videos: ["./assets/LDPlay.mp4"],
-                technologies: ["Unity", "Aseprite", "C#"],
-                platforms: ["PC"],
-                year: "2025",
-                downloadLink: "https://neutrony.itch.io/level-evil-demo"
-            }
-        ];
+            about: {
+                title: "About Me",
+                text1: "I'm Yasin, a game developer with 6 years of experience working on a variety of game genres, from single-player adventures to multiplayer experiences. I enjoy tackling diverse challenges in game design and bringing ideas to life through interactive mechanics and gameplay systems.",
+                text2: "Six years ago, I started with a small, fun project just to experiment and learn. Since then, I've explored a wide range of game genres, from single-player adventures to multiplayer experiences, constantly pushing myself to try new ideas and improve my craft."
+            },
+            skills: ["Unity", "Unreal Engine", "C#", "Blender", "3D Modeling", "Level Design", "Shader Programming", "AI Systems", "Multiplayer", "Git", "Aseprite", "Game Design"],
+            experience: {
+                title: "Experience Highlights",
+                items: [
+                    "2+ years of multiplayer experience (FishNet, Photon, Mirror)",
+                    "Cross-genre development",
+                    "Procedural animation experience"
+                ]
+            },
+            social: {
+                github: "https://github.com/yasib48",
+                gmail: "yasinsen.job@gmail.com",
+                discord: "yasib"
+            },
+            nav: {
+                about: "About",
+                projects: "Projects"
+            },
+            projectsSection: {
+                title: "My Projects",
+                subtitle: "A collection of games I've developed and contributed to"
+            },
+            footer: {
+                copyright: "© 2024 Game Developer Portfolio. All rights reserved.",
+                subtext: "Built with passion for gaming"
+            },
+            siteTitle: "Game Developer Portfolio",
+            projects: [
+                {
+                    id: 1,
+                    title: "Super Golf",
+                    shortDesc: "A multiplayer golf game with Steam integration",
+                    fullDesc: "This is a multiplayer arcade golf game developed entirely by me as a solo project. From the initial concept to implementation, I worked on all aspects of the game, focusing on creating a fast, responsive, and enjoyable arcade experience. The multiplayer infrastructure is built using FishNet, enabling real-time matches with friends or online opponents.\n\nThe ball physics system was developed by combining custom-written code with Unity's Rigidbody-based physics. This approach allowed precise control over movement, collisions, and shot feedback, ensuring a consistent and satisfying arcade feel while maintaining reliable physical behavior.",
+                    thumbnail: "./assets/Map1.png",
+                    screenshots: ["./assets/Map1.png", "./assets/MainMenu.png", "./assets/Lobi.png"],
+                    videos: [],
+                    technologies: ["Unity", "Blender", "C#", "FishNet", "Steam", "Shader Programming", "Figma"],
+                    platforms: ["PC"],
+                    year: "2025 - 2026",
+                    downloadLink: ""
+                },
+                {
+                    id: 2,
+                    title: "Level Evil",
+                    shortDesc: "Demo of a minimalist pixel art platformer showcasing level design, player movement, and core gameplay mechanics.",
+                    fullDesc: "This demo represents a small but highly challenging level I designed to explore precise movement and timing mechanics. The game intentionally features a difficult structure, crafted to test player reflexes and patience. I created it within the concept of a 'rage bait' experience, focusing on frustration-driven engagement that encourages players to learn through trial and error.",
+                    thumbnail: "./assets/LDLevel1.png",
+                    screenshots: ["./assets/LDLevel1.png", "./assets/LDLevel2.png", "./assets/LDLevel3.png"],
+                    videos: ["./assets/LDPlay.mp4"],
+                    technologies: ["Unity", "Aseprite", "C#"],
+                    platforms: ["PC"],
+                    year: "2025",
+                    downloadLink: "https://neutrony.itch.io/level-evil-demo"
+                }
+            ]
+        };
 
-        // Global State
-        let projects = [...defaultProjects];
+        // ==================== STATE ====================
+        let siteData = JSON.parse(JSON.stringify(defaultData));
         let adminPassword = localStorage.getItem('adminPassword') || 'admin123';
         let isLoggedIn = false;
         let firebaseDb = null;
         let firebaseConnected = false;
-
-        // Firebase Configuration
         let firebaseConfig = JSON.parse(localStorage.getItem('firebaseConfig') || 'null');
 
-        // Initialize Firebase if config exists
+        // ==================== FIREBASE ====================
         function initFirebase() {
             if (firebaseConfig && firebaseConfig.apiKey) {
                 try {
                     if (!firebase.apps.length) {
-                        firebase.initializeApp(firebaseConfig);
+                        firebase.initializeApp({
+                            apiKey: firebaseConfig.apiKey,
+                            databaseURL: firebaseConfig.databaseURL,
+                            projectId: firebaseConfig.projectId,
+                            appId: firebaseConfig.appId
+                        });
                     }
                     firebaseDb = firebase.database();
                     
-                    // Listen for data changes
-                    firebaseDb.ref('projects').on('value', (snapshot) => {
+                    firebaseDb.ref('siteData').on('value', (snapshot) => {
                         const data = snapshot.val();
                         if (data) {
-                            projects = data;
-                            renderProjects();
-                            initSlideshow();
-                            updateFirebaseStatus('connected');
-                        }
-                    });
-
-                    firebaseDb.ref('settings').on('value', (snapshot) => {
-                        const settings = snapshot.val();
-                        if (settings) {
-                            if (settings.aboutTitle) document.getElementById('aboutTitleDisplay').textContent = settings.aboutTitle;
-                            if (settings.aboutText1) document.getElementById('aboutText1Display').textContent = settings.aboutText1;
-                            if (settings.aboutText2) document.getElementById('aboutText2Display').textContent = settings.aboutText2;
+                            siteData = data;
+                            applyAllData();
                         }
                     });
 
                     firebaseConnected = true;
                     updateFirebaseStatus('connected');
                 } catch (error) {
-                    console.error('Firebase init error:', error);
+                    console.error('Firebase error:', error);
                     updateFirebaseStatus('disconnected');
+                    loadLocalData();
                 }
             } else {
-                // Load from localStorage if no Firebase
-                const savedProjects = localStorage.getItem('projects');
-                if (savedProjects) {
-                    projects = JSON.parse(savedProjects);
-                }
+                loadLocalData();
                 updateFirebaseStatus('local');
             }
         }
 
-        function updateFirebaseStatus(status) {
-            const statusEl = document.getElementById('firebaseStatus');
-            statusEl.className = `firebase-status ${status}`;
-            const labels = {
-                connected: '🔥 Firebase Bağlı',
-                disconnected: '❌ Bağlantı Hatası',
-                local: '💾 Yerel Mod'
-            };
-            statusEl.innerHTML = `<span class="status-dot"></span><span>${labels[status]}</span>`;
+        function loadLocalData() {
+            const saved = localStorage.getItem('siteData');
+            if (saved) {
+                siteData = JSON.parse(saved);
+            }
         }
 
-        // Admin Panel Functions
+        function updateFirebaseStatus(status) {
+            const el = document.getElementById('firebaseStatus');
+            if (!el) return;
+            el.className = `firebase-status ${status}`;
+            const labels = { connected: '🔥 Firebase Bağlı', disconnected: '❌ Bağlantı Hatası', local: '💾 Yerel Mod' };
+            el.innerHTML = `<span class="status-dot"></span><span>${labels[status]}</span>`;
+        }
+
+        function saveFirebaseConfig() {
+            firebaseConfig = {
+                apiKey: document.getElementById('fbApiKey').value,
+                databaseURL: document.getElementById('fbDatabaseUrl').value,
+                projectId: document.getElementById('fbProjectId').value,
+                appId: document.getElementById('fbAppId').value
+            };
+            localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
+            showToast('✅ Firebase ayarları kaydedildi! Sayfa yenileniyor...');
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        function testFirebase() {
+            if (firebaseConnected && firebaseDb) {
+                firebaseDb.ref('.info/connected').once('value', (snap) => {
+                    showToast(snap.val() ? '✅ Firebase bağlantısı başarılı!' : '❌ Bağlantı yok!');
+                });
+            } else {
+                showToast('❌ Firebase yapılandırılmamış!');
+            }
+        }
+
+        function disconnectFirebase() {
+            localStorage.removeItem('firebaseConfig');
+            showToast('🔌 Firebase bağlantısı kesildi!');
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        // ==================== SAVE & APPLY DATA ====================
+        function collectFormData() {
+            // Hero
+            siteData.hero = {
+                subtitle: document.getElementById('heroSubtitle')?.value || siteData.hero.subtitle,
+                title: document.getElementById('heroTitle')?.value || siteData.hero.title,
+                desc: document.getElementById('heroDesc')?.value || siteData.hero.desc,
+                button: document.getElementById('heroButton')?.value || siteData.hero.button
+            };
+
+            // About
+            siteData.about = {
+                title: document.getElementById('aboutTitle')?.value || siteData.about.title,
+                text1: document.getElementById('aboutText1')?.value || siteData.about.text1,
+                text2: document.getElementById('aboutText2')?.value || siteData.about.text2
+            };
+
+            // Skills
+            const skillInputs = document.querySelectorAll('#skillsList input');
+            siteData.skills = Array.from(skillInputs).map(i => i.value).filter(v => v);
+
+            // Experience
+            siteData.experience = {
+                title: document.getElementById('expTitle')?.value || siteData.experience.title,
+                items: Array.from(document.querySelectorAll('#expList input')).map(i => i.value).filter(v => v)
+            };
+
+            // Social
+            siteData.social = {
+                github: document.getElementById('socialGithub')?.value || siteData.social.github,
+                gmail: document.getElementById('socialGmail')?.value || siteData.social.gmail,
+                discord: document.getElementById('socialDiscord')?.value || siteData.social.discord
+            };
+
+            // Nav
+            siteData.nav = {
+                about: document.getElementById('navAbout')?.value || siteData.nav.about,
+                projects: document.getElementById('navProjects')?.value || siteData.nav.projects
+            };
+
+            // Projects Section
+            siteData.projectsSection = {
+                title: document.getElementById('projectsTitle')?.value || siteData.projectsSection.title,
+                subtitle: document.getElementById('projectsSubtitle')?.value || siteData.projectsSection.subtitle
+            };
+
+            // Footer
+            siteData.footer = {
+                copyright: document.getElementById('footerCopyright')?.value || siteData.footer.copyright,
+                subtext: document.getElementById('footerSubtext')?.value || siteData.footer.subtext
+            };
+
+            // Site Title
+            siteData.siteTitle = document.getElementById('siteTitle')?.value || siteData.siteTitle;
+        }
+
+        function applyAllData() {
+            // Hero
+            document.getElementById('heroSubtitleDisplay').textContent = siteData.hero.subtitle;
+            document.getElementById('heroTitleDisplay').textContent = siteData.hero.title;
+            document.getElementById('heroDescDisplay').textContent = siteData.hero.desc;
+            document.getElementById('heroButtonDisplay').textContent = siteData.hero.button;
+
+            // About
+            document.getElementById('aboutTitleDisplay').textContent = siteData.about.title;
+            document.getElementById('aboutText1Display').textContent = siteData.about.text1;
+            document.getElementById('aboutText2Display').textContent = siteData.about.text2;
+
+            // Skills
+            document.getElementById('skillsDisplay').innerHTML = siteData.skills.map(s => 
+                `<span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">${s}</span>`
+            ).join('');
+
+            // Experience
+            document.getElementById('expTitleDisplay').textContent = siteData.experience.title;
+            document.getElementById('expDisplay').innerHTML = siteData.experience.items.map(e => 
+                `<li class="flex items-center gap-2"><span class="w-2 h-2 bg-current"></span>${e}</li>`
+            ).join('');
+
+            // Social Buttons
+            document.getElementById('socialButtons').innerHTML = `
+                <a href="${siteData.social.github}" target="_blank" class="social-btn w-10 h-10 border flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                <button onclick="showContactInfo('gmail', '${siteData.social.gmail}')" class="social-btn w-10 h-10 border flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                </button>
+                <button onclick="showContactInfo('discord', '${siteData.social.discord}')" class="social-btn w-10 h-10 border flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+                </button>
+            `;
+
+            // Nav
+            document.getElementById('navAboutDisplay').textContent = siteData.nav.about;
+            document.getElementById('navProjectsDisplay').textContent = siteData.nav.projects;
+
+            // Projects Section
+            document.getElementById('projectsTitleDisplay').textContent = siteData.projectsSection.title;
+            document.getElementById('projectsSubtitleDisplay').textContent = siteData.projectsSection.subtitle;
+
+            // Footer
+            document.getElementById('footerCopyrightDisplay').textContent = siteData.footer.copyright;
+            document.getElementById('footerSubtextDisplay').textContent = siteData.footer.subtext;
+
+            // Site Title
+            document.title = siteData.siteTitle;
+
+            // Render projects
+            renderProjects();
+            initSlideshow();
+        }
+
+        function saveAllData() {
+            collectFormData();
+            
+            if (firebaseConnected && firebaseDb) {
+                firebaseDb.ref('siteData').set(siteData)
+                    .then(() => showToast('✅ Tüm değişiklikler Firebase\'e kaydedildi!'))
+                    .catch(err => showToast('❌ Hata: ' + err.message));
+            } else {
+                localStorage.setItem('siteData', JSON.stringify(siteData));
+                showToast('💾 Değişiklikler yerel olarak kaydedildi!');
+            }
+            
+            applyAllData();
+        }
+
+        function resetToDefault() {
+            if (confirm('Tüm değişiklikler silinecek ve varsayılan verilere dönülecek. Emin misiniz?')) {
+                siteData = JSON.parse(JSON.stringify(defaultData));
+                if (firebaseConnected && firebaseDb) {
+                    firebaseDb.ref('siteData').set(siteData);
+                }
+                localStorage.setItem('siteData', JSON.stringify(siteData));
+                loadAdminForm();
+                applyAllData();
+                showToast('🔄 Varsayılan verilere dönüldü!');
+            }
+        }
+
+        // ==================== ADMIN PANEL ====================
         document.addEventListener('keydown', function(e) {
-            // Ctrl + Shift + P to open admin
             if (e.ctrlKey && e.shiftKey && e.key === 'P') {
                 e.preventDefault();
                 openAdmin();
@@ -730,12 +866,11 @@
         }
 
         function checkPassword() {
-            const input = document.getElementById('adminPassword').value;
-            if (input === adminPassword) {
+            if (document.getElementById('adminPassword').value === adminPassword) {
                 isLoggedIn = true;
                 document.getElementById('passwordModal').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'flex';
-                loadAdminData();
+                loadAdminForm();
                 showToast('✅ Giriş başarılı!');
             } else {
                 showToast('❌ Yanlış şifre!');
@@ -743,135 +878,61 @@
             }
         }
 
-        function loadAdminData() {
-            renderProjectsList();
-            loadFirebaseConfig();
-            loadAboutSettings();
-        }
+        function loadAdminForm() {
+            // Hero
+            document.getElementById('heroSubtitle').value = siteData.hero.subtitle;
+            document.getElementById('heroTitle').value = siteData.hero.title;
+            document.getElementById('heroDesc').value = siteData.hero.desc;
+            document.getElementById('heroButton').value = siteData.hero.button;
 
-        function renderProjectsList() {
-            const container = document.getElementById('projectsList');
-            container.innerHTML = projects.map((p, index) => `
-                <div class="project-edit-card">
-                    <div class="flex justify-between items-start mb-3">
-                        <h4 class="text-white font-semibold">${p.title}</h4>
-                        <div class="flex gap-2">
-                            <button onclick="editProject(${index})" class="admin-btn admin-btn-secondary text-sm px-3 py-1">✏️ Düzenle</button>
-                            <button onclick="deleteProject(${index})" class="admin-btn admin-btn-danger text-sm px-3 py-1">🗑️ Sil</button>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm">${p.shortDesc}</p>
-                    <div class="flex gap-2 mt-2">
-                        ${p.platforms.map(pl => `<span class="text-xs bg-gray-700 px-2 py-1 rounded">${pl}</span>`).join('')}
-                        <span class="text-xs text-gray-500">${p.year}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+            // About
+            document.getElementById('aboutTitle').value = siteData.about.title;
+            document.getElementById('aboutText1').value = siteData.about.text1;
+            document.getElementById('aboutText2').value = siteData.about.text2;
 
-        function addNewProject() {
-            const newProject = {
-                id: Date.now(),
-                title: "Yeni Proje",
-                shortDesc: "Proje açıklaması...",
-                fullDesc: "Detaylı açıklama...",
-                thumbnail: "./assets/placeholder.png",
-                screenshots: [],
-                videos: [],
-                technologies: ["Unity"],
-                platforms: ["PC"],
-                year: new Date().getFullYear().toString(),
-                downloadLink: ""
-            };
-            projects.push(newProject);
-            renderProjectsList();
-            editProject(projects.length - 1);
-        }
+            // Skills
+            renderSkillsAdmin();
 
-        function editProject(index) {
-            const p = projects[index];
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[10000] p-4';
-            modal.id = 'editProjectModal';
-            modal.innerHTML = `
-                <div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-                    <h3 class="text-xl font-bold text-white mb-4">Proje Düzenle</h3>
-                    
-                    <label class="text-gray-400 text-sm">Başlık</label>
-                    <input type="text" id="editTitle" class="admin-input" value="${p.title}">
-                    
-                    <label class="text-gray-400 text-sm">Kısa Açıklama</label>
-                    <input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}">
-                    
-                    <label class="text-gray-400 text-sm">Detaylı Açıklama</label>
-                    <textarea id="editFullDesc" class="admin-input admin-textarea">${p.fullDesc}</textarea>
-                    
-                    <label class="text-gray-400 text-sm">Thumbnail URL</label>
-                    <input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}">
-                    
-                    <label class="text-gray-400 text-sm">Screenshots (virgülle ayır)</label>
-                    <input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}">
-                    
-                    <label class="text-gray-400 text-sm">Videos (virgülle ayır)</label>
-                    <input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}">
-                    
-                    <label class="text-gray-400 text-sm">Teknolojiler (virgülle ayır)</label>
-                    <input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}">
-                    
-                    <label class="text-gray-400 text-sm">Platformlar (virgülle ayır)</label>
-                    <input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}">
-                    
-                    <label class="text-gray-400 text-sm">Yıl</label>
-                    <input type="text" id="editYear" class="admin-input" value="${p.year}">
-                    
-                    <label class="text-gray-400 text-sm">Download Link</label>
-                    <input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}">
-                    
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-primary">Kaydet</button>
-                        <button onclick="closeEditModal()" class="admin-btn admin-btn-secondary">İptal</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
+            // Experience
+            document.getElementById('expTitle').value = siteData.experience.title;
+            renderExpAdmin();
 
-        function saveProjectEdit(index) {
-            projects[index] = {
-                ...projects[index],
-                title: document.getElementById('editTitle').value,
-                shortDesc: document.getElementById('editShortDesc').value,
-                fullDesc: document.getElementById('editFullDesc').value,
-                thumbnail: document.getElementById('editThumbnail').value,
-                screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s),
-                videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s),
-                technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s),
-                platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s),
-                year: document.getElementById('editYear').value,
-                downloadLink: document.getElementById('editDownload').value
-            };
-            closeEditModal();
-            renderProjectsList();
-            showToast('✅ Proje güncellendi!');
-        }
+            // Social
+            document.getElementById('socialGithub').value = siteData.social.github;
+            document.getElementById('socialGmail').value = siteData.social.gmail;
+            document.getElementById('socialDiscord').value = siteData.social.discord;
 
-        function closeEditModal() {
-            const modal = document.getElementById('editProjectModal');
-            if (modal) modal.remove();
-        }
+            // Nav
+            document.getElementById('navAbout').value = siteData.nav.about;
+            document.getElementById('navProjects').value = siteData.nav.projects;
 
-        function deleteProject(index) {
-            if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) {
-                projects.splice(index, 1);
-                renderProjectsList();
-                showToast('🗑️ Proje silindi!');
+            // Projects Section
+            document.getElementById('projectsTitle').value = siteData.projectsSection.title;
+            document.getElementById('projectsSubtitle').value = siteData.projectsSection.subtitle;
+
+            // Footer
+            document.getElementById('footerCopyright').value = siteData.footer.copyright;
+            document.getElementById('footerSubtext').value = siteData.footer.subtext;
+
+            // Site Title
+            document.getElementById('siteTitle').value = siteData.siteTitle;
+
+            // Firebase
+            if (firebaseConfig) {
+                document.getElementById('fbApiKey').value = firebaseConfig.apiKey || '';
+                document.getElementById('fbDatabaseUrl').value = firebaseConfig.databaseURL || '';
+                document.getElementById('fbProjectId').value = firebaseConfig.projectId || '';
+                document.getElementById('fbAppId').value = firebaseConfig.appId || '';
             }
+
+            // Projects
+            renderProjectsAdmin();
         }
 
-        function switchTab(tabName) {
+        function switchTab(name) {
             document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).style.display = 'block';
+            document.getElementById(`tab-${name}`).style.display = 'block';
             event.target.classList.add('active');
         }
 
@@ -887,111 +948,155 @@
             }
         }
 
-        function loadAboutSettings() {
-            const settings = JSON.parse(localStorage.getItem('aboutSettings') || '{}');
-            document.getElementById('aboutTitle').value = settings.title || 'About Me';
-            document.getElementById('aboutText1').value = settings.text1 || document.getElementById('aboutText1Display').textContent;
-            document.getElementById('aboutText2').value = settings.text2 || document.getElementById('aboutText2Display').textContent;
+        // ==================== SKILLS ADMIN ====================
+        function renderSkillsAdmin() {
+            document.getElementById('skillsList').innerHTML = siteData.skills.map((s, i) => `
+                <div class="skill-item">
+                    <input type="text" class="admin-input" value="${s}" style="margin-bottom:0;">
+                    <button onclick="removeSkill(${i})" class="admin-btn admin-btn-danger">×</button>
+                </div>
+            `).join('');
         }
 
-        function saveAboutSettings() {
-            const settings = {
-                title: document.getElementById('aboutTitle').value,
-                text1: document.getElementById('aboutText1').value,
-                text2: document.getElementById('aboutText2').value
+        function addSkill() {
+            siteData.skills.push('Yeni Yetenek');
+            renderSkillsAdmin();
+        }
+
+        function removeSkill(i) {
+            siteData.skills.splice(i, 1);
+            renderSkillsAdmin();
+        }
+
+        // ==================== EXPERIENCE ADMIN ====================
+        function renderExpAdmin() {
+            document.getElementById('expList').innerHTML = siteData.experience.items.map((e, i) => `
+                <div class="exp-item">
+                    <input type="text" class="admin-input" value="${e}" style="margin-bottom:0;">
+                    <button onclick="removeExp(${i})" class="admin-btn admin-btn-danger">×</button>
+                </div>
+            `).join('');
+        }
+
+        function addExp() {
+            siteData.experience.items.push('Yeni deneyim');
+            renderExpAdmin();
+        }
+
+        function removeExp(i) {
+            siteData.experience.items.splice(i, 1);
+            renderExpAdmin();
+        }
+
+        // ==================== PROJECTS ADMIN ====================
+        function renderProjectsAdmin() {
+            document.getElementById('projectsList').innerHTML = siteData.projects.map((p, i) => `
+                <div class="project-card-admin">
+                    <div class="project-card-admin-header">
+                        <div>
+                            <h4 class="text-white font-semibold">${p.title}</h4>
+                            <p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editProject(${i})" class="admin-btn admin-btn-secondary">✏️ Düzenle</button>
+                            <button onclick="deleteProject(${i})" class="admin-btn admin-btn-danger">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addNewProject() {
+            siteData.projects.push({
+                id: Date.now(),
+                title: "Yeni Proje",
+                shortDesc: "Proje açıklaması...",
+                fullDesc: "Detaylı açıklama...",
+                thumbnail: "./assets/placeholder.png",
+                screenshots: [],
+                videos: [],
+                technologies: ["Unity"],
+                platforms: ["PC"],
+                year: new Date().getFullYear().toString(),
+                downloadLink: ""
+            });
+            renderProjectsAdmin();
+            editProject(siteData.projects.length - 1);
+        }
+
+        function editProject(index) {
+            const p = siteData.projects[index];
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4';
+            modal.id = 'editProjectModal';
+            modal.innerHTML = `
+                <div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">✏️ Proje Düzenle</h3>
+                    <div class="grid-2">
+                        <div>
+                            <label class="admin-label">Başlık</label>
+                            <input type="text" id="editTitle" class="admin-input" value="${p.title}">
+                        </div>
+                        <div>
+                            <label class="admin-label">Yıl</label>
+                            <input type="text" id="editYear" class="admin-input" value="${p.year}">
+                        </div>
+                    </div>
+                    <label class="admin-label">Kısa Açıklama</label>
+                    <input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}">
+                    <label class="admin-label">Detaylı Açıklama</label>
+                    <textarea id="editFullDesc" class="admin-input admin-textarea" style="min-height:150px;">${p.fullDesc}</textarea>
+                    <label class="admin-label">Thumbnail URL</label>
+                    <input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}">
+                    <label class="admin-label">Screenshots (virgülle ayır)</label>
+                    <input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}">
+                    <label class="admin-label">Videos (virgülle ayır)</label>
+                    <input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}">
+                    <label class="admin-label">Teknolojiler (virgülle ayır)</label>
+                    <input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}">
+                    <label class="admin-label">Platformlar (virgülle ayır)</label>
+                    <input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}">
+                    <label class="admin-label">Download Link</label>
+                    <input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}">
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-success">💾 Kaydet</button>
+                        <button onclick="document.getElementById('editProjectModal').remove()" class="admin-btn admin-btn-secondary">İptal</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveProjectEdit(index) {
+            siteData.projects[index] = {
+                ...siteData.projects[index],
+                title: document.getElementById('editTitle').value,
+                shortDesc: document.getElementById('editShortDesc').value,
+                fullDesc: document.getElementById('editFullDesc').value,
+                thumbnail: document.getElementById('editThumbnail').value,
+                screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s),
+                videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s),
+                technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s),
+                platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s),
+                year: document.getElementById('editYear').value,
+                downloadLink: document.getElementById('editDownload').value
             };
-            
-            // Update display
-            document.getElementById('aboutTitleDisplay').textContent = settings.title;
-            document.getElementById('aboutText1Display').textContent = settings.text1;
-            document.getElementById('aboutText2Display').textContent = settings.text2;
-            
-            // Save to Firebase or localStorage
-            if (firebaseConnected && firebaseDb) {
-                firebaseDb.ref('settings').set({
-                    aboutTitle: settings.title,
-                    aboutText1: settings.text1,
-                    aboutText2: settings.text2
-                });
-            }
-            localStorage.setItem('aboutSettings', JSON.stringify(settings));
-            showToast('✅ Ayarlar kaydedildi!');
+            document.getElementById('editProjectModal').remove();
+            renderProjectsAdmin();
+            showToast('✅ Proje güncellendi!');
         }
 
-        function loadFirebaseConfig() {
-            if (firebaseConfig) {
-                document.getElementById('fbApiKey').value = firebaseConfig.apiKey || '';
-                document.getElementById('fbAuthDomain').value = firebaseConfig.authDomain || '';
-                document.getElementById('fbDatabaseUrl').value = firebaseConfig.databaseURL || '';
-                document.getElementById('fbProjectId').value = firebaseConfig.projectId || '';
-                document.getElementById('fbStorageBucket').value = firebaseConfig.storageBucket || '';
-                document.getElementById('fbMessagingSenderId').value = firebaseConfig.messagingSenderId || '';
-                document.getElementById('fbAppId').value = firebaseConfig.appId || '';
+        function deleteProject(index) {
+            if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) {
+                siteData.projects.splice(index, 1);
+                renderProjectsAdmin();
+                showToast('🗑️ Proje silindi!');
             }
         }
 
-        function saveFirebaseConfig() {
-            firebaseConfig = {
-                apiKey: document.getElementById('fbApiKey').value,
-                authDomain: document.getElementById('fbAuthDomain').value,
-                databaseURL: document.getElementById('fbDatabaseUrl').value,
-                projectId: document.getElementById('fbProjectId').value,
-                storageBucket: document.getElementById('fbStorageBucket').value,
-                messagingSenderId: document.getElementById('fbMessagingSenderId').value,
-                appId: document.getElementById('fbAppId').value
-            };
-            localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
-            showToast('✅ Firebase ayarları kaydedildi! Sayfa yenileniyor...');
-            setTimeout(() => location.reload(), 1500);
-        }
-
-        function testFirebaseConnection() {
-            if (firebaseConnected && firebaseDb) {
-                firebaseDb.ref('.info/connected').once('value', (snap) => {
-                    if (snap.val() === true) {
-                        showToast('✅ Firebase bağlantısı başarılı!');
-                    } else {
-                        showToast('❌ Firebase bağlantısı yok!');
-                    }
-                });
-            } else {
-                showToast('❌ Firebase yapılandırılmamış!');
-            }
-        }
-
-        function disconnectFirebase() {
-            localStorage.removeItem('firebaseConfig');
-            firebaseConfig = null;
-            firebaseConnected = false;
-            showToast('🔌 Firebase bağlantısı kesildi! Sayfa yenileniyor...');
-            setTimeout(() => location.reload(), 1500);
-        }
-
-        function saveAllChanges() {
-            // Save to Firebase if connected
-            if (firebaseConnected && firebaseDb) {
-                firebaseDb.ref('projects').set(projects)
-                    .then(() => {
-                        showToast('✅ Tüm değişiklikler Firebase\'e kaydedildi!');
-                    })
-                    .catch(err => {
-                        showToast('❌ Firebase kayıt hatası: ' + err.message);
-                    });
-            } else {
-                // Save to localStorage
-                localStorage.setItem('projects', JSON.stringify(projects));
-                showToast('💾 Değişiklikler yerel olarak kaydedildi!');
-            }
-            
-            // Refresh display
-            renderProjects();
-            initSlideshow();
-        }
-
-        // Render Projects
+        // ==================== RENDER PROJECTS ====================
         function renderProjects() {
-            const grid = document.getElementById('projectsGrid');
-            grid.innerHTML = projects.map(p => `
+            document.getElementById('projectsGrid').innerHTML = siteData.projects.map(p => `
                 <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(${p.id})">
                     <div class="aspect-video overflow-hidden">
                         <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover">
@@ -1009,48 +1114,41 @@
                 </div>
             `).join('');
             
-            // Re-observe for scroll animations
-            document.querySelectorAll('.scroll-reveal').forEach(el => {
-                revealObserver.observe(el);
-            });
+            document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
         }
 
-        // Hero Slideshow
+        // ==================== SLIDESHOW ====================
         function initSlideshow() {
-            const slideshowContainer = document.getElementById('heroSlideshow');
-            slideshowContainer.innerHTML = '';
+            const container = document.getElementById('heroSlideshow');
+            container.innerHTML = '';
             const allImages = [];
 
-            projects.forEach(project => {
-                if (project.thumbnail) allImages.push(project.thumbnail);
-                if (project.screenshots) {
-                    project.screenshots.forEach(s => {
-                        if (!allImages.includes(s)) allImages.push(s);
-                    });
-                }
+            siteData.projects.forEach(p => {
+                if (p.thumbnail) allImages.push(p.thumbnail);
+                if (p.screenshots) p.screenshots.forEach(s => { if (!allImages.includes(s)) allImages.push(s); });
             });
 
-            allImages.forEach((img, index) => {
+            allImages.forEach((img, i) => {
                 const slide = document.createElement('div');
-                slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
-                slide.innerHTML = `<img src="${img}" alt="Project Screenshot">`;
-                slideshowContainer.appendChild(slide);
+                slide.className = `hero-slide ${i === 0 ? 'active' : ''}`;
+                slide.innerHTML = `<img src="${img}" alt="Screenshot">`;
+                container.appendChild(slide);
             });
 
             if (allImages.length > 1) {
-                let currentSlide = 0;
+                let current = 0;
                 setInterval(() => {
                     const slides = document.querySelectorAll('.hero-slide');
                     if (slides.length > 0) {
-                        slides[currentSlide].classList.remove('active');
-                        currentSlide = (currentSlide + 1) % slides.length;
-                        slides[currentSlide].classList.add('active');
+                        slides[current].classList.remove('active');
+                        current = (current + 1) % slides.length;
+                        slides[current].classList.add('active');
                     }
                 }, 4000);
             }
         }
 
-        // Theme Toggle
+        // ==================== UTILITIES ====================
         function toggleTheme() {
             document.body.classList.toggle('dark');
             localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
@@ -1060,46 +1158,39 @@
             document.body.classList.remove('dark');
         }
 
-        // Toast
-        function showToast(message) {
+        function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.innerHTML = message;
+            toast.textContent = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function showContactInfo(type, value) {
-            const icon = type === 'gmail' ? '📧' : '🎮';
             navigator.clipboard.writeText(value);
-            showToast(`${icon} ${value} (Kopyalandı!)`);
+            showToast(`${type === 'gmail' ? '📧' : '🎮'} ${value} (Kopyalandı!)`);
         }
 
         function openModal(id) {
-            const project = projects.find(p => p.id === id);
+            const project = siteData.projects.find(p => p.id === id);
             if (!project) return;
 
-            const modal = document.getElementById('projectModal');
-            const content = document.getElementById('modalContent');
-
-            content.innerHTML = `
+            document.getElementById('modalContent').innerHTML = `
                 <div class="grid lg:grid-cols-2 gap-8">
                     <div>
                         <div id="mainMedia" class="w-full aspect-video mb-4 bg-black rounded-lg overflow-hidden">
                             <img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover">
                         </div>
-                        ${(project.screenshots && project.screenshots.length > 0) || (project.videos && project.videos.length > 0) ? `
+                        ${(project.screenshots?.length || project.videos?.length) ? `
                             <div class="grid grid-cols-4 gap-2">
-                                ${project.videos ? project.videos.map(v => `
-                                    <div class="relative w-full aspect-video cursor-pointer hover:opacity-80 transition-opacity bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('${v}')">
-                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M8 5v14l11-7z"/>
-                                        </svg>
+                                ${project.videos?.map(v => `
+                                    <div class="relative w-full aspect-video cursor-pointer hover:opacity-80 bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('${v}')">
+                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                         <span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span>
                                     </div>
-                                `).join('') : ''}
-                                ${project.screenshots ? project.screenshots.slice(0, 4 - (project.videos ? project.videos.length : 0)).map(s => `
-                                    <img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 transition-opacity rounded" onclick="showImage('${s}')">
-                                `).join('') : ''}
+                                `).join('') || ''}
+                                ${project.screenshots?.slice(0, 4 - (project.videos?.length || 0)).map(s => `
+                                    <img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 rounded" onclick="showImage('${s}')">
+                                `).join('') || ''}
                             </div>
                         ` : ''}
                     </div>
@@ -1112,34 +1203,28 @@
                         <div class="mb-6">
                             <h4 class="font-bold mb-3 text-main">Technologies</h4>
                             <div class="flex flex-wrap gap-2">
-                                ${project.technologies.map(t => `
-                                    <span class="px-3 py-1 border border-main text-sm rounded text-main">${t}</span>
-                                `).join('')}
+                                ${project.technologies.map(t => `<span class="px-3 py-1 border border-main text-sm rounded text-main">${t}</span>`).join('')}
                             </div>
                         </div>
                         <div class="mb-6">
                             <h4 class="font-bold mb-3 text-main">Platforms</h4>
                             <div class="flex flex-wrap gap-2">
-                                ${project.platforms.map(p => `
-                                    <span class="px-3 py-1 text-sm rounded" style="background-color: var(--accent); color: var(--bg-primary);">${p}</span>
-                                `).join('')}
+                                ${project.platforms.map(p => `<span class="px-3 py-1 text-sm rounded" style="background-color: var(--accent); color: var(--bg-primary);">${p}</span>`).join('')}
                             </div>
                         </div>
-                        <div class="flex gap-4">
-                            ${project.downloadLink ? `
-                                <a href="${project.downloadLink}" target="_blank" class="flex items-center gap-2 px-6 py-3 font-semibold hover:opacity-80 transition-colors rounded" style="background-color: var(--accent); color: var(--bg-primary);">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                    </svg>
-                                    Download Demo
-                                </a>
-                            ` : ''}
-                        </div>
+                        ${project.downloadLink ? `
+                            <a href="${project.downloadLink}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 font-semibold hover:opacity-80 rounded" style="background-color: var(--accent); color: var(--bg-primary);">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Download Demo
+                            </a>
+                        ` : ''}
                     </div>
                 </div>
             `;
 
-            modal.classList.remove('hidden');
+            document.getElementById('projectModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
@@ -1156,24 +1241,19 @@
             document.getElementById('mainMedia').innerHTML = `<img src="${url}" alt="Screenshot" class="w-full h-full object-cover">`;
         }
 
-        // Scroll Reveal
-        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        // ==================== SCROLL REVEAL ====================
         const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
+            entries.forEach((entry, i) => {
                 if (entry.isIntersecting) {
-                    setTimeout(() => entry.target.classList.add('revealed'), index * 100);
+                    setTimeout(() => entry.target.classList.add('revealed'), i * 100);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
 
-        // Initialize
+        // ==================== INIT ====================
         initFirebase();
-        renderProjects();
-        initSlideshow();
-        
-        document.querySelectorAll('.scroll-reveal').forEach(el => {
-            revealObserver.observe(el);
-        });
+        applyAllData();
+        document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
     </script>
 </body>
 </html>
