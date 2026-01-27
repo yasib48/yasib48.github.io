@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Developer Portfolio</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
@@ -40,18 +40,18 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .project-card {
+        .project-card, .devlog-project-card {
             transition: all 0.4s ease;
             background-color: var(--bg-card);
         }
-        .project-card:hover {
+        .project-card:hover, .devlog-project-card:hover {
             transform: translateY(-8px);
         }
-        .project-card img {
+        .project-card img, .devlog-project-card img {
             transition: filter 0.4s ease;
             filter: grayscale(30%);
         }
-        .project-card:hover img {
+        .project-card:hover img, .devlog-project-card:hover img {
             filter: grayscale(0%);
         }
         .modal-overlay {
@@ -160,7 +160,7 @@
             display: flex; flex-direction: column;
         }
         .admin-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a; border-bottom: 1px solid #333;
             padding: 20px 24px; display: flex; justify-content: space-between; align-items: center;
         }
         .admin-body { padding: 24px; overflow-y: auto; flex: 1; }
@@ -168,17 +168,16 @@
             width: 100%; padding: 12px 16px; background: #1a1a1a; border: 1px solid #333;
             border-radius: 8px; color: white; margin-bottom: 12px; font-size: 14px;
         }
-        .admin-input:focus { outline: none; border-color: #667eea; }
+        .admin-input:focus { outline: none; border-color: #666; }
         .admin-textarea { min-height: 100px; resize: vertical; }
         .admin-btn {
             padding: 10px 20px; border-radius: 8px; font-weight: 600;
             cursor: pointer; transition: all 0.2s; font-size: 14px;
         }
         .admin-btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none;
+            background: #fff; color: #000; border: none;
         }
-        .admin-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .admin-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
         .admin-btn-secondary { background: #333; color: white; border: 1px solid #444; }
         .admin-btn-danger { background: #dc2626; color: white; border: none; }
         .admin-btn-success { background: #059669; color: white; border: none; }
@@ -188,7 +187,7 @@
             padding: 20px; margin-bottom: 16px;
         }
         .admin-section-title {
-            font-size: 16px; font-weight: 700; color: #667eea; margin-bottom: 16px;
+            font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 16px;
             display: flex; align-items: center; gap: 8px;
         }
         .admin-label { display: block; color: #888; font-size: 12px; margin-bottom: 6px; font-weight: 500; }
@@ -197,7 +196,7 @@
             padding: 10px 20px; background: #222; border: 1px solid #333;
             color: #888; cursor: pointer; border-radius: 8px; transition: all 0.2s; font-size: 14px;
         }
-        .admin-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; }
+        .admin-tab.active { background: #fff; color: #000; border-color: transparent; }
         .admin-tab:hover:not(.active) { background: #333; color: white; }
 
         .skill-item, .exp-item, .social-item {
@@ -210,10 +209,6 @@
             padding: 16px; margin-bottom: 12px;
             transition: all 0.2s ease;
         }
-        .project-card-admin.dragging {
-            opacity: 0.5;
-            border-color: #667eea;
-        }
         .project-card-admin-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
         }
@@ -225,12 +220,12 @@
         .firebase-status.connected { background: rgba(5,150,105,0.2); color: #10b981; }
         .firebase-status.disconnected { background: rgba(220,38,38,0.2); color: #ef4444; }
         .firebase-status.local { background: rgba(245,158,11,0.2); color: #f59e0b; }
-        .firebase-status.loading { background: rgba(59,130,246,0.2); color: #3b82f6; }
+        .firebase-status.loading { background: rgba(100,100,100,0.2); color: #888; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
         .connected .status-dot { background: #10b981; }
         .disconnected .status-dot { background: #ef4444; }
         .local .status-dot { background: #f59e0b; }
-        .loading .status-dot { background: #3b82f6; }
+        .loading .status-dot { background: #888; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         .password-modal {
@@ -246,20 +241,263 @@
             background: #222; border: 1px dashed #444; border-radius: 8px;
             color: #888; cursor: pointer; font-size: 13px; transition: all 0.2s;
         }
-        .add-btn:hover { border-color: #667eea; color: #667eea; }
+        .add-btn:hover { border-color: #888; color: #fff; }
 
-        /* Project Order Buttons */
         .order-btn {
             width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
             background: #333; border: 1px solid #444; border-radius: 6px;
             color: #888; cursor: pointer; transition: all 0.2s;
         }
-        .order-btn:hover:not(:disabled) { background: #667eea; color: white; border-color: #667eea; }
+        .order-btn:hover:not(:disabled) { background: #555; color: white; border-color: #666; }
         .order-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .order-number {
-            background: #667eea; color: white; width: 28px; height: 28px;
+            background: #fff; color: #000; width: 28px; height: 28px;
             border-radius: 6px; display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 12px;
+        }
+
+        /* ==================== DEVLOG STYLES ==================== */
+        .devlog-entry {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+        .devlog-entry:last-child {
+            border-bottom: none;
+        }
+        .devlog-entry:hover {
+            background-color: var(--bg-secondary);
+        }
+        .devlog-entry-header {
+            cursor: pointer;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .devlog-entry-number {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            min-width: 40px;
+        }
+        .devlog-entry-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+            min-width: 100px;
+        }
+        .devlog-entry-title {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .devlog-entry-summary {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .devlog-entry-toggle {
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
+        .devlog-entry-toggle.open {
+            transform: rotate(180deg);
+        }
+        .devlog-entry-content {
+            display: none;
+            padding: 0 20px 20px 76px;
+            animation: slideDown 0.3s ease;
+        }
+        .devlog-entry-content.open {
+            display: block;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .devlog-media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .devlog-media-item {
+            aspect-ratio: 16/10;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .devlog-media-item:hover {
+            transform: scale(1.02);
+            border-color: var(--accent);
+        }
+        .devlog-media-item img,
+        .devlog-media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .devlog-inline-media img,
+        .devlog-inline-media video {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .devlog-entry-body {
+            margin-top: 12px;
+        }
+        .devlog-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .devlog-tag {
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Devlog Modal */
+        .devlog-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: none;
+        }
+        .devlog-modal.open {
+            display: block;
+        }
+        .devlog-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            animation: fadeIn 0.3s ease;
+        }
+        .devlog-modal-content {
+            position: absolute;
+            inset: 20px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            .devlog-modal-content {
+                inset: 40px 80px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .devlog-modal-content {
+                inset: 60px 120px;
+            }
+        }
+        .devlog-modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .devlog-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .devlog-modal-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .devlog-modal-close {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .devlog-modal-close:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        .devlog-modal-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .devlog-empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Media Lightbox */
+        .media-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .media-lightbox.open {
+            display: flex;
+        }
+        .media-lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .media-lightbox-content img,
+        .media-lightbox-content video {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        .media-lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .media-lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Version/Phase badge */
+        .version-badge {
+            padding: 2px 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-family: monospace;
         }
     </style>
 </head>
@@ -268,7 +506,7 @@
     <div id="loadingOverlay" class="loading-overlay">
         <div class="text-center">
             <div class="loading-spinner mx-auto mb-4"></div>
-            <p class="text-sub">Yükleniyor...</p>
+            <p class="text-sub">Loading...</p>
         </div>
     </div>
 
@@ -303,6 +541,7 @@
                     <button class="admin-tab active" onclick="switchTab('hero')">🏠 Hero</button>
                     <button class="admin-tab" onclick="switchTab('about')">👤 Hakkımda</button>
                     <button class="admin-tab" onclick="switchTab('skills')">🛠️ Yetenekler</button>
+                    <button class="admin-tab" onclick="switchTab('devlog')">📝 Devlog</button>
                     <button class="admin-tab" onclick="switchTab('projects')">📁 Projeler</button>
                     <button class="admin-tab" onclick="switchTab('footer')">📝 Footer</button>
                     <button class="admin-tab" onclick="switchTab('social')">🔗 Sosyal</button>
@@ -360,6 +599,31 @@
                     </div>
                 </div>
 
+                <!-- Devlog Tab -->
+                <div id="tab-devlog" class="tab-content" style="display:none;">
+                    <div class="admin-section">
+                        <div class="admin-section-title">📝 Devlog Bölümü Ayarları</div>
+                        <div class="grid-2">
+                            <div>
+                                <label class="admin-label">Bölüm Başlığı</label>
+                                <input type="text" id="devlogSectionTitle" class="admin-input" placeholder="Development Log">
+                            </div>
+                            <div>
+                                <label class="admin-label">Bölüm Alt Başlığı</label>
+                                <input type="text" id="devlogSectionSubtitle" class="admin-input" placeholder="Follow the journey...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="admin-section-title mb-0">📝 Devlog Projeleri</div>
+                            <button onclick="addDevlogProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4">Her proje için ayrı devlog kartı oluşturulur. Projeye tıklandığında güncellemeler listelenir.</p>
+                        <div id="devlogProjectsList"></div>
+                    </div>
+                </div>
+
                 <!-- Projects Tab -->
                 <div id="tab-projects" class="tab-content" style="display:none;">
                     <div class="admin-section">
@@ -377,7 +641,7 @@
                     </div>
                     <div class="admin-section">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="admin-section-title mb-0">📁 Projeler (Sıralamayı değiştirmek için okları kullanın)</div>
+                            <div class="admin-section-title mb-0">📁 Projeler</div>
                             <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
                         </div>
                         <div id="projectsList"></div>
@@ -422,6 +686,10 @@
                                 <input type="text" id="navAbout" class="admin-input" placeholder="About">
                             </div>
                             <div>
+                                <label class="admin-label">Devlog Link Yazısı</label>
+                                <input type="text" id="navDevlog" class="admin-input" placeholder="Devlog">
+                            </div>
+                            <div>
                                 <label class="admin-label">Projects Link Yazısı</label>
                                 <input type="text" id="navProjects" class="admin-input" placeholder="Projects">
                             </div>
@@ -433,31 +701,6 @@
                 <div id="tab-firebase" class="tab-content" style="display:none;">
                     <div class="admin-section">
                         <div class="admin-section-title">🔥 Firebase Bağlantısı</div>
-                        
-                        <div class="bg-red-900/20 border border-red-600/50 rounded-lg p-4 mb-4">
-                            <h4 class="text-red-400 font-semibold mb-2">⚠️ ÖNEMLİ: Firebase Config'i Koda Gömmeniz Gerekiyor!</h4>
-                            <p class="text-gray-300 text-sm mb-2">Firebase ayarları tarayıcı hafızasında (localStorage) tutuluyor. Bu yüzden siz projeleri görüyorsunuz ama arkadaşlarınız göremiyor.</p>
-                            <p class="text-gray-300 text-sm"><strong>Çözüm:</strong> Aşağıdaki "Config'i Koda Göm" butonuna tıklayın, çıkan kodu kopyalayıp HTML dosyanızdaki ilgili yere yapıştırın.</p>
-                        </div>
-                        
-                        <div class="bg-green-900/20 border border-green-600/50 rounded-lg p-4 mb-4">
-                            <h4 class="text-green-400 font-semibold mb-2">✅ Tüm Site Verileri Senkronize Edilir:</h4>
-                            <p class="text-gray-300 text-sm">Hero, Hakkımda, Yetenekler, Projeler (sıralama dahil), Footer, Sosyal Medya ve tüm ayarlar Firebase'e kaydedilir.</p>
-                        </div>
-                        
-                        <div class="bg-yellow-900/20 border border-yellow-600/50 rounded-lg p-4 mb-4">
-                            <h4 class="text-yellow-400 font-semibold mb-2">📋 Kurulum Adımları:</h4>
-                            <ol class="text-gray-300 text-sm space-y-1">
-                                <li>1. <a href="https://console.firebase.google.com" target="_blank" class="text-blue-400 underline">Firebase Console</a>'a git</li>
-                                <li>2. Yeni proje oluştur</li>
-                                <li>3. Realtime Database oluştur (Build > Realtime Database)</li>
-                                <li>4. Rules: <code class="bg-black/50 px-2 py-0.5 rounded text-xs">{"rules": {".read": true, ".write": true}}</code></li>
-                                <li>5. Project Settings > Web App ekle</li>
-                                <li>6. Config bilgilerini aşağıya yapıştır</li>
-                                <li>7. <strong class="text-yellow-400">"Config'i Koda Göm" butonuna tıkla ve HTML'i güncelle!</strong></li>
-                            </ol>
-                        </div>
-                        
                         <div class="grid-2">
                             <div>
                                 <label class="admin-label">API Key</label>
@@ -510,11 +753,55 @@
         </div>
     </div>
 
+    <!-- Devlog Entry Editor Modal -->
+    <div id="devlogEntryModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4" style="display:none;">
+        <div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700">
+            <h3 class="text-xl font-bold text-white mb-4" id="devlogEntryModalTitle">📝 Yeni Güncelleme</h3>
+            <input type="hidden" id="editingDevlogProjectId">
+            <input type="hidden" id="editingDevlogEntryId">
+            
+            <div class="grid-2">
+                <div>
+                    <label class="admin-label">Tarih</label>
+                    <input type="date" id="devlogEntryDate" class="admin-input">
+                </div>
+
+            </div>
+            
+            <label class="admin-label">Başlık</label>
+            <input type="text" id="devlogEntryTitle" class="admin-input" placeholder="Lobby sistemini baştan yazdım">
+            
+            <label class="admin-label">Özet (1-2 cümle, listede görünür)</label>
+            <input type="text" id="devlogEntrySummary" class="admin-input" placeholder="FishNet ile yeni lobby sistemi, daha stabil bağlantı.">
+            
+            <label class="admin-label">Detaylı Açıklama (Resim/video eklemek için URL'yi yeni satıra yazın)</label>
+            <textarea id="devlogEntryContent" class="admin-input admin-textarea" style="min-height:180px;" placeholder="Bu güncellemede neler yaptığınızın açıklaması...
+
+Örnek:
+Lobby sistemini tamamen yeniledim.
+
+./assets/lobby.png
+
+Artık oyuncular daha hızlı bağlanabiliyor.
+
+./assets/demo.mp4
+
+Yukarıda göründüğü gibi çalışıyor."></textarea>
+            
+            <label class="admin-label">Etiketler (virgülle ayırın)</label>
+            <input type="text" id="devlogEntryTags" class="admin-input" placeholder="Multiplayer, UI, Shader...">
+            
+            <div class="flex gap-3 mt-4">
+                <button onclick="saveDevlogEntry()" class="admin-btn admin-btn-success">💾 Kaydet</button>
+                <button onclick="closeDevlogEntryModal()" class="admin-btn admin-btn-secondary">İptal</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Embed Code Modal -->
     <div id="embedCodeModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4" style="display:none;">
         <div class="bg-gray-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700">
             <h3 class="text-xl font-bold text-white mb-4">📋 Firebase Config Kodu</h3>
-            <p class="text-gray-400 mb-4">Aşağıdaki kodu kopyalayın ve HTML dosyanızdaki <code class="bg-black/50 px-2 py-0.5 rounded">EMBEDDED_FIREBASE_CONFIG</code> değişkenini bu şekilde güncelleyin:</p>
             <pre id="embedCodeContent" class="bg-black p-4 rounded-lg text-green-400 text-sm overflow-x-auto mb-4"></pre>
             <div class="flex gap-3">
                 <button onclick="copyEmbedCode()" class="admin-btn admin-btn-primary">📋 Kopyala</button>
@@ -523,12 +810,40 @@
         </div>
     </div>
 
+    <!-- Devlog Modal (Steam-style list) -->
+    <div id="devlogModal" class="devlog-modal">
+        <div class="devlog-modal-overlay" onclick="closeDevlogModal()"></div>
+        <div class="devlog-modal-content">
+            <div class="devlog-modal-header">
+                <div>
+                    <h2 id="devlogModalTitle" class="devlog-modal-title">Project Name — Development Log</h2>
+                    <p id="devlogModalSubtitle" class="devlog-modal-subtitle">8 updates • Last update: 20 Jan 2025</p>
+                </div>
+                <button class="devlog-modal-close" onclick="closeDevlogModal()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="devlog-modal-body" id="devlogModalBody">
+                <!-- Entries will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Lightbox -->
+    <div id="mediaLightbox" class="media-lightbox" onclick="closeLightbox()">
+        <button class="media-lightbox-close">&times;</button>
+        <div class="media-lightbox-content" id="lightboxContent" onclick="event.stopPropagation()"></div>
+    </div>
+
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 nav-bg backdrop-blur-sm z-40 border-b border-main">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#hero" class="text-xl font-bold tracking-tight text-main"></a>
             <div class="flex items-center gap-6">
                 <a href="#about" id="navAboutDisplay" class="text-sm font-medium text-main hover:text-sub transition-colors">About</a>
+                <a href="#devlog" id="navDevlogDisplay" class="text-sm font-medium text-main hover:text-sub transition-colors">Devlog</a>
                 <a href="#projects" id="navProjectsDisplay" class="text-sm font-medium text-main hover:text-sub transition-colors">Projects</a>
                 <div class="theme-toggle" onclick="toggleTheme()">
                     <div class="theme-toggle-circle">
@@ -554,7 +869,10 @@
             <p id="heroSubtitleDisplay" class="text-gray-400 uppercase tracking-widest text-sm mb-4">Game Developer & Programmer</p>
             <h1 id="heroTitleDisplay" class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">Yasin Sen</h1>
             <p id="heroDescDisplay" class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-8">Hi, I'm Yasin. I've been developing games for 5 years, crafting both multiplayer and singleplayer experiences.</p>
-            <a href="#projects" id="heroButtonDisplay" class="inline-block border-2 border-white px-8 py-3 font-semibold hover:bg-white hover:text-black transition-all duration-300">Explore Projects</a>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="#projects" id="heroButtonDisplay" class="inline-block border-2 border-white px-8 py-3 font-semibold hover:bg-white hover:text-black transition-all duration-300">Explore Projects</a>
+                <a href="#devlog" id="heroDevlogButtonDisplay" class="inline-block border-2 border-white px-8 py-3 font-semibold hover:bg-white hover:text-black transition-all duration-300">Browse Devlogs</a>
+            </div>
         </div>
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce z-10">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -585,8 +903,19 @@
         </div>
     </section>
 
+    <!-- Devlog Section -->
+    <section id="devlog" class="py-24 section-secondary">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 id="devlogTitleDisplay" class="text-4xl font-bold mb-4 text-main">Development Log</h2>
+                <p id="devlogSubtitleDisplay" class="text-sub text-lg">Follow the journey of my projects from concept to completion</p>
+            </div>
+            <div id="devlogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
     <!-- Projects Section -->
-    <section id="projects" class="py-24 section-secondary">
+    <section id="projects" class="py-24 section-primary">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-16 scroll-reveal">
                 <h2 id="projectsTitleDisplay" class="text-4xl font-bold mb-4 text-main">My Projects</h2>
@@ -619,14 +948,12 @@
 
     <script>
         // ==================== EMBEDDED FIREBASE CONFIG ====================
-        // ⚠️ BURAYA FİREBASE CONFIG'İNİZİ YAPIŞTIRIN!
-        // Admin panelinden "Config'i Koda Göm" butonuna tıklayarak kodu alabilirsiniz.
-       const EMBEDDED_FIREBASE_CONFIG = {
-    apiKey: "AIzaSyCJfiH5G4_3cqN5fH41SoXAyG_KMrP86ho",
-    databaseURL: "https://portfolio-9f1f9-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "portfolio-9f1f9",
-    appId: "1:214233175280:web:a2da60c182a0ec40b05e35"
-};
+        const EMBEDDED_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCJfiH5G4_3cqN5fH41SoXAyG_KMrP86ho",
+            databaseURL: "https://portfolio-9f1f9-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "portfolio-9f1f9",
+            appId: "1:214233175280:web:a2da60c182a0ec40b05e35"
+        };
         // ==================== EMBEDDED FIREBASE CONFIG END ====================
 
         // ==================== DEFAULT DATA ====================
@@ -635,12 +962,13 @@
                 subtitle: "Game Developer & Programmer",
                 title: "Yasin Sen",
                 desc: "Hi, I'm Yasin. I've been developing games for 5 years, crafting both multiplayer and singleplayer experiences.",
-                button: "Explore Projects"
+                button: "Explore Projects",
+                devlogButton: "Browse Devlogs"
             },
             about: {
                 title: "About Me",
-                text1: "I'm Yasin, a game developer with 6 years of experience working on a variety of game genres, from single-player adventures to multiplayer experiences. I enjoy tackling diverse challenges in game design and bringing ideas to life through interactive mechanics and gameplay systems.",
-                text2: "Six years ago, I started with a small, fun project just to experiment and learn. Since then, I've explored a wide range of game genres, from single-player adventures to multiplayer experiences, constantly pushing myself to try new ideas and improve my craft."
+                text1: "I'm Yasin, a game developer with 6 years of experience working on a variety of game genres, from single-player adventures to multiplayer experiences.",
+                text2: "Six years ago, I started with a small, fun project just to experiment and learn. Since then, I've explored a wide range of game genres."
             },
             skills: ["Unity", "Unreal Engine", "C#", "Blender", "3D Modeling", "Level Design", "Shader Programming", "AI Systems", "Multiplayer", "Git", "Aseprite", "Game Design"],
             experience: {
@@ -658,8 +986,67 @@
             },
             nav: {
                 about: "About",
+                devlog: "Devlog",
                 projects: "Projects"
             },
+            devlogSection: {
+                title: "Development Log",
+                subtitle: "Follow the journey of my projects from concept to completion"
+            },
+            devlogProjects: [
+                {
+                    id: 1,
+                    name: "Super Golf",
+                    description: "Multiplayer arcade golf game development journey",
+                    thumbnail: "./assets/Map1.png",
+                    entries: [
+                        {
+                            id: 1,
+                            date: "2025-01-20",
+                            version: "v0.3.0",
+                            title: "Rebuilt the lobby system from scratch",
+                            summary: "New lobby system with FishNet, more stable and faster connections.",
+                            content: "This week I completely rewrote the lobby system. The old system was causing issues in some edge cases.\n\n./assets/Lobi.png\n\nThe new system provides much more stable and faster connections.",
+                            tags: ["Multiplayer", "FishNet", "Networking"]
+                        },
+                        {
+                            id: 2,
+                            date: "2025-01-15",
+                            version: "v0.2.5",
+                            title: "Ball physics improvements",
+                            summary: "More realistic ball movement and surface interactions.",
+                            content: "Worked extensively on ball physics. Now there are different behaviors on different surfaces.\n\n./assets/Map1.png\n\nDifferent friction values applied for grass, sand, and water surfaces.",
+                            tags: ["Physics", "Gameplay"]
+                        },
+                        {
+                            id: 3,
+                            date: "2025-01-10",
+                            version: "v0.2.0",
+                            title: "Main menu design",
+                            summary: "New modern main menu interface completed.",
+                            content: "Completely redesigned the main menu. Cleaner and more modern look.\n\n./assets/MainMenu.png\n\nButtons and animations added.",
+                            tags: ["UI", "Design"]
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "Level Evil",
+                    description: "Challenging pixel art platformer development",
+                    thumbnail: "./assets/LDLevel1.png",
+                    entries: [
+                        {
+                            id: 1,
+                            date: "2025-01-18",
+                            version: "Phase 1",
+                            title: "First level design completed",
+                            summary: "Iterated for a challenging but fair level experience.",
+                            content: "Level Evil's first level is now playable. Worked extensively on difficulty balance.\n\n./assets/LDLevel1.png\n\nTraps and platform mechanics tested.\n\n./assets/LDLevel2.png\n\nSecond section is almost ready.",
+                            tags: ["Level Design", "Pixel Art"]
+                        }
+                    ]
+                }
+            ],
             projectsSection: {
                 title: "My Projects",
                 subtitle: "A collection of games I've developed and contributed to"
@@ -674,11 +1061,11 @@
                     id: 1,
                     title: "Super Golf",
                     shortDesc: "A multiplayer golf game with Steam integration",
-                    fullDesc: "This is a multiplayer arcade golf game developed entirely by me as a solo project. From the initial concept to implementation, I worked on all aspects of the game, focusing on creating a fast, responsive, and enjoyable arcade experience. The multiplayer infrastructure is built using FishNet, enabling real-time matches with friends or online opponents.\n\nThe ball physics system was developed by combining custom-written code with Unity's Rigidbody-based physics. This approach allowed precise control over movement, collisions, and shot feedback, ensuring a consistent and satisfying arcade feel while maintaining reliable physical behavior.",
+                    fullDesc: "This is a multiplayer arcade golf game developed entirely by me as a solo project.",
                     thumbnail: "./assets/Map1.png",
                     screenshots: ["./assets/Map1.png", "./assets/MainMenu.png", "./assets/Lobi.png"],
                     videos: [],
-                    technologies: ["Unity", "Blender", "C#", "FishNet", "Steam", "Shader Programming", "Figma"],
+                    technologies: ["Unity", "Blender", "C#", "FishNet", "Steam"],
                     platforms: ["PC"],
                     year: "2025 - 2026",
                     downloadLink: ""
@@ -686,8 +1073,8 @@
                 {
                     id: 2,
                     title: "Level Evil",
-                    shortDesc: "Demo of a minimalist pixel art platformer showcasing level design, player movement, and core gameplay mechanics.",
-                    fullDesc: "This demo represents a small but highly challenging level I designed to explore precise movement and timing mechanics. The game intentionally features a difficult structure, crafted to test player reflexes and patience. I created it within the concept of a 'rage bait' experience, focusing on frustration-driven engagement that encourages players to learn through trial and error.",
+                    shortDesc: "Demo of a minimalist pixel art platformer",
+                    fullDesc: "This demo represents a small but highly challenging level I designed.",
                     thumbnail: "./assets/LDLevel1.png",
                     screenshots: ["./assets/LDLevel1.png", "./assets/LDLevel2.png", "./assets/LDLevel3.png"],
                     videos: ["./assets/LDPlay.mp4"],
@@ -705,19 +1092,9 @@
         let isLoggedIn = false;
         let firebaseDb = null;
         let firebaseConnected = false;
-        let dataLoaded = false;
 
-        // Firebase config: önce embedded config'e bak, sonra localStorage'a
-        let firebaseConfig = null;
-        if (EMBEDDED_FIREBASE_CONFIG && EMBEDDED_FIREBASE_CONFIG.apiKey) {
-            firebaseConfig = EMBEDDED_FIREBASE_CONFIG;
-            console.log('✅ Using embedded Firebase config');
-        } else {
-            firebaseConfig = JSON.parse(localStorage.getItem('firebaseConfig') || 'null');
-            if (firebaseConfig) {
-                console.log('⚠️ Using localStorage Firebase config (only works on your device!)');
-            }
-        }
+        let firebaseConfig = EMBEDDED_FIREBASE_CONFIG?.apiKey ? EMBEDDED_FIREBASE_CONFIG : 
+                             JSON.parse(localStorage.getItem('firebaseConfig') || 'null');
 
         // ==================== FIREBASE ====================
         function initFirebase() {
@@ -726,67 +1103,36 @@
             if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.databaseURL) {
                 try {
                     if (!firebase.apps.length) {
-                        firebase.initializeApp({
-                            apiKey: firebaseConfig.apiKey,
-                            databaseURL: firebaseConfig.databaseURL,
-                            projectId: firebaseConfig.projectId,
-                            appId: firebaseConfig.appId
-                        });
+                        firebase.initializeApp(firebaseConfig);
                     }
                     firebaseDb = firebase.database();
                     
-                    // Connection state listener
                     firebaseDb.ref('.info/connected').on('value', (snap) => {
-                        if (snap.val() === true) {
-                            firebaseConnected = true;
-                            updateFirebaseStatus('connected');
-                            console.log('✅ Firebase connected');
-                        } else {
-                            firebaseConnected = false;
-                            updateFirebaseStatus('disconnected');
-                            console.log('❌ Firebase disconnected');
-                        }
+                        firebaseConnected = snap.val() === true;
+                        updateFirebaseStatus(firebaseConnected ? 'connected' : 'disconnected');
                     });
                     
-                    // Listen for ALL site data changes
                     firebaseDb.ref('siteData').on('value', (snapshot) => {
                         const data = snapshot.val();
                         if (data) {
-                            // Merge with defaults to ensure all fields exist
                             siteData = mergeWithDefaults(data);
-                            dataLoaded = true;
                             applyAllData();
-                            hideLoading();
-                            console.log('✅ All site data loaded from Firebase');
-                        } else {
-                            // Firebase'de veri yok, varsayılanları kullan
-                            console.log('⚠️ No data in Firebase, using defaults');
-                            dataLoaded = true;
-                            applyAllData();
-                            hideLoading();
                         }
-                    }, (error) => {
-                        console.error('Firebase read error:', error);
-                        updateFirebaseStatus('disconnected');
+                        hideLoading();
+                    }, () => {
                         loadLocalData();
-                        dataLoaded = true;
                         applyAllData();
                         hideLoading();
                     });
-
                 } catch (error) {
-                    console.error('Firebase init error:', error);
-                    updateFirebaseStatus('disconnected');
+                    console.error('Firebase error:', error);
                     loadLocalData();
-                    dataLoaded = true;
                     applyAllData();
                     hideLoading();
                 }
             } else {
-                console.log('⚠️ No Firebase config, using local/default data');
                 loadLocalData();
                 updateFirebaseStatus('local');
-                dataLoaded = true;
                 applyAllData();
                 hideLoading();
             }
@@ -801,10 +1147,12 @@
                 experience: { ...defaultData.experience, ...(data.experience || {}) },
                 social: { ...defaultData.social, ...(data.social || {}) },
                 nav: { ...defaultData.nav, ...(data.nav || {}) },
+                devlogSection: { ...defaultData.devlogSection, ...(data.devlogSection || {}) },
                 projectsSection: { ...defaultData.projectsSection, ...(data.projectsSection || {}) },
                 footer: { ...defaultData.footer, ...(data.footer || {}) },
                 skills: data.skills || defaultData.skills,
-                projects: data.projects || defaultData.projects
+                projects: data.projects || defaultData.projects,
+                devlogProjects: data.devlogProjects || defaultData.devlogProjects
             };
         }
 
@@ -812,21 +1160,14 @@
             const saved = localStorage.getItem('siteData');
             if (saved) {
                 try {
-                    const data = JSON.parse(saved);
-                    siteData = mergeWithDefaults(data);
-                    console.log('✅ Loaded from localStorage');
-                } catch (e) {
-                    console.error('localStorage parse error:', e);
-                }
+                    siteData = mergeWithDefaults(JSON.parse(saved));
+                } catch (e) {}
             }
         }
 
         function hideLoading() {
             setTimeout(() => {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) {
-                    overlay.classList.add('hidden');
-                }
+                document.getElementById('loadingOverlay')?.classList.add('hidden');
             }, 300);
         }
 
@@ -834,12 +1175,7 @@
             const el = document.getElementById('firebaseStatus');
             if (!el) return;
             el.className = `firebase-status ${status}`;
-            const labels = { 
-                connected: '🔥 Firebase Bağlı', 
-                disconnected: '❌ Bağlantı Hatası', 
-                local: '💾 Yerel Mod',
-                loading: '⏳ Yükleniyor...'
-            };
+            const labels = { connected: '🔥 Firebase Bağlı', disconnected: '❌ Bağlantı Hatası', local: '💾 Yerel Mod', loading: '⏳ Yükleniyor...' };
             el.innerHTML = `<span class="status-dot"></span><span>${labels[status]}</span>`;
         }
 
@@ -850,139 +1186,101 @@
                 projectId: document.getElementById('fbProjectId').value.trim(),
                 appId: document.getElementById('fbAppId').value.trim()
             };
-            
             if (!newConfig.apiKey || !newConfig.databaseURL) {
                 showToast('❌ API Key ve Database URL zorunlu!');
                 return;
             }
-            
             localStorage.setItem('firebaseConfig', JSON.stringify(newConfig));
-            firebaseConfig = newConfig;
             showToast('✅ Firebase ayarları kaydedildi! Sayfa yenileniyor...');
             setTimeout(() => location.reload(), 1500);
         }
 
         function showEmbedCode() {
-            const config = {
-                apiKey: document.getElementById('fbApiKey').value.trim() || firebaseConfig?.apiKey || '',
-                databaseURL: document.getElementById('fbDatabaseUrl').value.trim() || firebaseConfig?.databaseURL || '',
-                projectId: document.getElementById('fbProjectId').value.trim() || firebaseConfig?.projectId || '',
-                appId: document.getElementById('fbAppId').value.trim() || firebaseConfig?.appId || ''
-            };
-            
-            const code = `const EMBEDDED_FIREBASE_CONFIG = {
-    apiKey: "${config.apiKey}",
-    databaseURL: "${config.databaseURL}",
-    projectId: "${config.projectId}",
-    appId: "${config.appId}"
+            const config = firebaseConfig || {};
+            document.getElementById('embedCodeContent').textContent = `const EMBEDDED_FIREBASE_CONFIG = {
+    apiKey: "${config.apiKey || ''}",
+    databaseURL: "${config.databaseURL || ''}",
+    projectId: "${config.projectId || ''}",
+    appId: "${config.appId || ''}"
 };`;
-            
-            document.getElementById('embedCodeContent').textContent = code;
             document.getElementById('embedCodeModal').style.display = 'flex';
         }
 
         function copyEmbedCode() {
-            const code = document.getElementById('embedCodeContent').textContent;
-            navigator.clipboard.writeText(code);
-            showToast('📋 Kod kopyalandı! HTML dosyanızdaki EMBEDDED_FIREBASE_CONFIG değişkenini bu kodla değiştirin.');
+            navigator.clipboard.writeText(document.getElementById('embedCodeContent').textContent);
+            showToast('📋 Kod kopyalandı!');
         }
 
         function testFirebase() {
-            if (firebaseConnected && firebaseDb) {
-                firebaseDb.ref('.info/connected').once('value', (snap) => {
-                    showToast(snap.val() ? '✅ Firebase bağlantısı başarılı!' : '❌ Bağlantı yok!');
-                });
-            } else {
-                showToast('❌ Firebase yapılandırılmamış veya bağlı değil!');
-            }
+            showToast(firebaseConnected ? '✅ Firebase bağlantısı başarılı!' : '❌ Bağlantı yok!');
         }
 
         function disconnectFirebase() {
             localStorage.removeItem('firebaseConfig');
-            showToast('🔌 Firebase bağlantısı kesildi! (Not: Embedded config varsa hala çalışır)');
+            showToast('🔌 Bağlantı kesildi!');
             setTimeout(() => location.reload(), 1500);
         }
 
         // ==================== SAVE & APPLY DATA ====================
         function collectFormData() {
-            // Hero
             siteData.hero = {
                 subtitle: document.getElementById('heroSubtitle')?.value || siteData.hero.subtitle,
                 title: document.getElementById('heroTitle')?.value || siteData.hero.title,
                 desc: document.getElementById('heroDesc')?.value || siteData.hero.desc,
-                button: document.getElementById('heroButton')?.value || siteData.hero.button
+                button: document.getElementById('heroButton')?.value || siteData.hero.button,
+                devlogButton: document.getElementById('heroDevlogButton')?.value || siteData.hero.devlogButton
             };
-
-            // About
             siteData.about = {
                 title: document.getElementById('aboutTitle')?.value || siteData.about.title,
                 text1: document.getElementById('aboutText1')?.value || siteData.about.text1,
                 text2: document.getElementById('aboutText2')?.value || siteData.about.text2
             };
-
-            // Skills
-            const skillInputs = document.querySelectorAll('#skillsList input');
-            siteData.skills = Array.from(skillInputs).map(i => i.value).filter(v => v);
-
-            // Experience
+            siteData.skills = Array.from(document.querySelectorAll('#skillsList input')).map(i => i.value).filter(v => v);
             siteData.experience = {
                 title: document.getElementById('expTitle')?.value || siteData.experience.title,
                 items: Array.from(document.querySelectorAll('#expList input')).map(i => i.value).filter(v => v)
             };
-
-            // Social
             siteData.social = {
                 github: document.getElementById('socialGithub')?.value || siteData.social.github,
                 gmail: document.getElementById('socialGmail')?.value || siteData.social.gmail,
                 discord: document.getElementById('socialDiscord')?.value || siteData.social.discord
             };
-
-            // Nav
             siteData.nav = {
                 about: document.getElementById('navAbout')?.value || siteData.nav.about,
+                devlog: document.getElementById('navDevlog')?.value || siteData.nav.devlog,
                 projects: document.getElementById('navProjects')?.value || siteData.nav.projects
             };
-
-            // Projects Section
+            siteData.devlogSection = {
+                title: document.getElementById('devlogSectionTitle')?.value || siteData.devlogSection.title,
+                subtitle: document.getElementById('devlogSectionSubtitle')?.value || siteData.devlogSection.subtitle
+            };
             siteData.projectsSection = {
                 title: document.getElementById('projectsTitle')?.value || siteData.projectsSection.title,
                 subtitle: document.getElementById('projectsSubtitle')?.value || siteData.projectsSection.subtitle
             };
-
-            // Footer
             siteData.footer = {
                 copyright: document.getElementById('footerCopyright')?.value || siteData.footer.copyright,
                 subtext: document.getElementById('footerSubtext')?.value || siteData.footer.subtext
             };
-
-            // Site Title
             siteData.siteTitle = document.getElementById('siteTitle')?.value || siteData.siteTitle;
         }
 
         function applyAllData() {
-            // Hero
             document.getElementById('heroSubtitleDisplay').textContent = siteData.hero.subtitle;
             document.getElementById('heroTitleDisplay').textContent = siteData.hero.title;
             document.getElementById('heroDescDisplay').textContent = siteData.hero.desc;
             document.getElementById('heroButtonDisplay').textContent = siteData.hero.button;
-
-            // About
+            document.getElementById('heroDevlogButtonDisplay').textContent = siteData.hero.devlogButton || 'Browse Devlogs';
             document.getElementById('aboutTitleDisplay').textContent = siteData.about.title;
             document.getElementById('aboutText1Display').textContent = siteData.about.text1;
             document.getElementById('aboutText2Display').textContent = siteData.about.text2;
-
-            // Skills
             document.getElementById('skillsDisplay').innerHTML = siteData.skills.map(s => 
                 `<span class="skill-tag px-4 py-2 border text-sm font-medium cursor-default">${s}</span>`
             ).join('');
-
-            // Experience
             document.getElementById('expTitleDisplay').textContent = siteData.experience.title;
             document.getElementById('expDisplay').innerHTML = siteData.experience.items.map(e => 
                 `<li class="flex items-center gap-2"><span class="w-2 h-2 bg-current"></span>${e}</li>`
             ).join('');
-
-            // Social Buttons
             document.getElementById('socialButtons').innerHTML = `
                 <a href="${siteData.social.github}" target="_blank" class="social-btn w-10 h-10 border flex items-center justify-center">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -992,85 +1290,393 @@
                 </button>
                 <button onclick="showContactInfo('discord', '${siteData.social.discord}')" class="social-btn w-10 h-10 border flex items-center justify-center">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
-                </button>
-            `;
-
-            // Nav
+                </button>`;
             document.getElementById('navAboutDisplay').textContent = siteData.nav.about;
+            document.getElementById('navDevlogDisplay').textContent = siteData.nav.devlog;
             document.getElementById('navProjectsDisplay').textContent = siteData.nav.projects;
-
-            // Projects Section
+            document.getElementById('devlogTitleDisplay').textContent = siteData.devlogSection.title;
+            document.getElementById('devlogSubtitleDisplay').textContent = siteData.devlogSection.subtitle;
             document.getElementById('projectsTitleDisplay').textContent = siteData.projectsSection.title;
             document.getElementById('projectsSubtitleDisplay').textContent = siteData.projectsSection.subtitle;
-
-            // Footer
             document.getElementById('footerCopyrightDisplay').textContent = siteData.footer.copyright;
             document.getElementById('footerSubtextDisplay').textContent = siteData.footer.subtext;
-
-            // Site Title
             document.title = siteData.siteTitle;
 
-            // Render projects
+            renderDevlogCards();
             renderProjects();
             initSlideshow();
         }
 
         function saveAllData() {
             collectFormData();
-            
-            // Create a complete data object to save
-            const dataToSave = {
-                hero: siteData.hero,
-                about: siteData.about,
-                skills: siteData.skills,
-                experience: siteData.experience,
-                social: siteData.social,
-                nav: siteData.nav,
-                projectsSection: siteData.projectsSection,
-                footer: siteData.footer,
-                siteTitle: siteData.siteTitle,
-                projects: siteData.projects
-            };
-            
             if (firebaseConnected && firebaseDb) {
-                // Save ALL data to Firebase
-                firebaseDb.ref('siteData').set(dataToSave)
-                    .then(() => {
-                        showToast('✅ Tüm site verileri Firebase\'e kaydedildi!');
-                        console.log('✅ All data saved to Firebase:', Object.keys(dataToSave));
-                    })
+                firebaseDb.ref('siteData').set(siteData)
+                    .then(() => showToast('✅ Tüm veriler Firebase\'e kaydedildi!'))
                     .catch(err => showToast('❌ Hata: ' + err.message));
             } else {
-                localStorage.setItem('siteData', JSON.stringify(dataToSave));
-                showToast('💾 Tüm veriler yerel olarak kaydedildi! (Not: Diğer kullanıcılar göremez)');
+                localStorage.setItem('siteData', JSON.stringify(siteData));
+                showToast('💾 Veriler yerel olarak kaydedildi!');
             }
-            
             applyAllData();
         }
 
         function resetToDefault() {
-            if (confirm('Tüm değişiklikler silinecek ve varsayılan verilere dönülecek. Emin misiniz?')) {
+            if (confirm('Tüm değişiklikler silinecek. Emin misiniz?')) {
                 siteData = JSON.parse(JSON.stringify(defaultData));
-                if (firebaseConnected && firebaseDb) {
-                    firebaseDb.ref('siteData').set(siteData);
-                }
+                if (firebaseConnected && firebaseDb) firebaseDb.ref('siteData').set(siteData);
                 localStorage.setItem('siteData', JSON.stringify(siteData));
                 loadAdminForm();
                 applyAllData();
-                showToast('🔄 Varsayılan verilere dönüldü!');
+                showToast('🔄 Varsayılana dönüldü!');
+            }
+        }
+
+        // ==================== DEVLOG FUNCTIONS ====================
+        function renderDevlogCards() {
+            const grid = document.getElementById('devlogGrid');
+            if (!siteData.devlogProjects?.length) {
+                grid.innerHTML = '<p class="text-sub text-center col-span-3">No devlog projects added yet.</p>';
+                return;
+            }
+
+            grid.innerHTML = siteData.devlogProjects.map(project => {
+                const entries = project.entries || [];
+                const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const lastUpdate = sortedEntries[0]?.date ? formatDate(sortedEntries[0].date) : 'No updates';
+                
+                return `
+                    <div class="devlog-project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden border border-main" onclick="openDevlogModal(${project.id})">
+                        <div class="aspect-video overflow-hidden">
+                            <img src="${project.thumbnail}" alt="${project.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-main mb-2">${project.name}</h3>
+                            <p class="text-sub text-sm mb-4">${project.description}</p>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-sub">${entries.length} update${entries.length !== 1 ? 's' : ''}</span>
+                                <span class="text-sub">Last: ${lastUpdate}</span>
+                            </div>
+                            <button class="mt-4 w-full py-2 border border-main text-main text-sm font-medium hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] transition-all rounded">
+                                Open Devlog
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
+        }
+
+        function openDevlogModal(projectId) {
+            const project = siteData.devlogProjects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const entries = project.entries || [];
+            const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const lastUpdate = sortedEntries[0]?.date ? formatDate(sortedEntries[0].date) : 'No updates yet';
+
+            document.getElementById('devlogModalTitle').textContent = `${project.name} — Development Log`;
+            document.getElementById('devlogModalSubtitle').textContent = `${entries.length} update${entries.length !== 1 ? 's' : ''} • Last update: ${lastUpdate}`;
+
+            const body = document.getElementById('devlogModalBody');
+            
+            if (entries.length === 0) {
+                body.innerHTML = `<div class="devlog-empty">
+                    <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p>No updates yet for this project.</p>
+                </div>`;
+            } else {
+                body.innerHTML = sortedEntries.map((entry, index) => {
+                    const entryNum = String(entries.length - index).padStart(2, '0');
+                    return `
+                        <div class="devlog-entry" data-entry-id="${entry.id}">
+                            <div class="devlog-entry-header" onclick="toggleDevlogEntry(this)">
+                                <span class="devlog-entry-number">#${entryNum}</span>
+                                <span class="devlog-entry-date">${formatDate(entry.date)}</span>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="devlog-entry-title">${entry.title}</span>
+                                    </div>
+                                    <p class="devlog-entry-summary">${entry.summary || ''}</p>
+                                </div>
+                                <svg class="devlog-entry-toggle w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                            <div class="devlog-entry-content">
+                                <p class="text-sub leading-relaxed">${entry.content || ''}</p>
+                                ${entry.content ? `<div class="devlog-entry-body">${renderContentWithMedia(entry.content)}</div>` : ''}
+                                ${entry.tags?.length ? `
+                                    <div class="devlog-tags">
+                                        ${entry.tags.map(t => `<span class="devlog-tag">#${t}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('devlogModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDevlogModal() {
+            document.getElementById('devlogModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function toggleDevlogEntry(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.devlog-entry-toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // İçerikteki URL'leri otomatik olarak resim/video'ya çevir
+        function renderContentWithMedia(content) {
+            if (!content) return '';
+            
+            // Satırlara böl
+            const lines = content.split('\n');
+            let result = [];
+            
+            for (let line of lines) {
+                const trimmedLine = line.trim();
+                
+                // Resim kontrolü (.png, .jpg, .jpeg, .gif, .webp)
+                if (trimmedLine.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+                    result.push(`<div class="devlog-inline-media my-3">
+                        <img src="${trimmedLine}" alt="Media" class="rounded-lg max-w-full cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox('${trimmedLine}', false)" onerror="this.parentElement.innerHTML='<span class=\\'text-red-400 text-sm\\'>⚠️ Failed to load image: ${trimmedLine}</span>'">
+                    </div>`);
+                }
+                // Video kontrolü (.mp4, .webm, .ogg)
+                else if (trimmedLine.match(/\.(mp4|webm|ogg)$/i)) {
+                    result.push(`<div class="devlog-inline-media my-3">
+                        <div class="relative rounded-lg overflow-hidden cursor-pointer group" onclick="openLightbox('${trimmedLine}', true)">
+                            <video src="${trimmedLine}" class="max-w-full" muted></video>
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/50 transition-colors">
+                                <div class="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`);
+                }
+                // Normal metin satırı
+                else if (trimmedLine) {
+                    result.push(`<p class="text-sub leading-relaxed mb-2">${trimmedLine}</p>`);
+                }
+                // Boş satır (paragraf arası boşluk)
+                else {
+                    result.push('<div class="h-2"></div>');
+                }
+            }
+            
+            return result.join('');
+        }
+
+        function openLightbox(src, isVideo) {
+            const content = document.getElementById('lightboxContent');
+            content.innerHTML = isVideo ? 
+                `<video src="${src}" controls autoplay class="rounded-lg"></video>` :
+                `<img src="${src}" alt="Preview" class="rounded-lg">`;
+            document.getElementById('mediaLightbox').classList.add('open');
+        }
+
+        function closeLightbox() {
+            document.getElementById('mediaLightbox').classList.remove('open');
+        }
+
+        // ==================== DEVLOG ADMIN ====================
+        function renderDevlogProjectsAdmin() {
+            const list = document.getElementById('devlogProjectsList');
+            if (!siteData.devlogProjects?.length) {
+                list.innerHTML = '<p class="text-gray-400">Henüz devlog projesi yok.</p>';
+                return;
+            }
+
+            list.innerHTML = siteData.devlogProjects.map((project, pIndex) => {
+                const entries = project.entries || [];
+                return `
+                    <div class="project-card-admin">
+                        <div class="project-card-admin-header">
+                            <div class="flex items-center gap-3">
+                                <div class="order-number">${pIndex + 1}</div>
+                                <div>
+                                    <h4 class="text-white font-semibold">${project.name}</h4>
+                                    <p class="text-gray-400 text-sm">${entries.length} güncelleme</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editDevlogProject(${project.id})" class="admin-btn admin-btn-secondary text-sm">✏️ Düzenle</button>
+                                <button onclick="addDevlogEntry(${project.id})" class="admin-btn admin-btn-primary text-sm">+ Güncelleme</button>
+                                <button onclick="deleteDevlogProject(${project.id})" class="admin-btn admin-btn-danger text-sm">🗑️</button>
+                            </div>
+                        </div>
+                        ${entries.length > 0 ? `
+                            <div class="mt-3 space-y-2">
+                                ${[...entries].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 3).map(entry => `
+                                    <div class="flex items-center justify-between bg-black/30 rounded-lg px-3 py-2">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-gray-500 text-xs">${formatDate(entry.date)}</span>
+                                            <span class="text-gray-300 text-sm">${entry.title}</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button onclick="editDevlogEntry(${project.id}, ${entry.id})" class="text-gray-400 hover:text-white text-sm">✏️</button>
+                                            <button onclick="deleteDevlogEntry(${project.id}, ${entry.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${entries.length > 3 ? `<p class="text-gray-500 text-xs text-center">+${entries.length - 3} daha...</p>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addDevlogProject() {
+            const newProject = {
+                id: Date.now(),
+                name: "Yeni Proje",
+                description: "Proje açıklaması...",
+                thumbnail: "./assets/placeholder.png",
+                entries: []
+            };
+            siteData.devlogProjects.push(newProject);
+            renderDevlogProjectsAdmin();
+            editDevlogProject(newProject.id);
+        }
+
+        function editDevlogProject(projectId) {
+            const project = siteData.devlogProjects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4';
+            modal.id = 'editDevlogProjectModal';
+            modal.innerHTML = `
+                <div class="bg-gray-900 rounded-lg max-w-lg w-full p-6 border border-gray-700">
+                    <h3 class="text-xl font-bold text-white mb-4">✏️ Devlog Projesi Düzenle</h3>
+                    <label class="admin-label">Proje Adı</label>
+                    <input type="text" id="editDevlogName" class="admin-input" value="${project.name}">
+                    <label class="admin-label">Açıklama</label>
+                    <input type="text" id="editDevlogDesc" class="admin-input" value="${project.description}">
+                    <label class="admin-label">Thumbnail URL</label>
+                    <input type="text" id="editDevlogThumb" class="admin-input" value="${project.thumbnail}">
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="saveDevlogProject(${projectId})" class="admin-btn admin-btn-success">💾 Kaydet</button>
+                        <button onclick="document.getElementById('editDevlogProjectModal').remove()" class="admin-btn admin-btn-secondary">İptal</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveDevlogProject(projectId) {
+            const project = siteData.devlogProjects.find(p => p.id === projectId);
+            if (project) {
+                project.name = document.getElementById('editDevlogName').value;
+                project.description = document.getElementById('editDevlogDesc').value;
+                project.thumbnail = document.getElementById('editDevlogThumb').value;
+            }
+            document.getElementById('editDevlogProjectModal').remove();
+            renderDevlogProjectsAdmin();
+            showToast('✅ Proje güncellendi!');
+        }
+
+        function deleteDevlogProject(projectId) {
+            if (confirm('Bu devlog projesini ve tüm güncellemelerini silmek istediğinize emin misiniz?')) {
+                siteData.devlogProjects = siteData.devlogProjects.filter(p => p.id !== projectId);
+                renderDevlogProjectsAdmin();
+                showToast('🗑️ Proje silindi!');
+            }
+        }
+
+        function addDevlogEntry(projectId) {
+            document.getElementById('devlogEntryModalTitle').textContent = '📝 Yeni Güncelleme';
+            document.getElementById('editingDevlogProjectId').value = projectId;
+            document.getElementById('editingDevlogEntryId').value = '';
+            document.getElementById('devlogEntryDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('devlogEntryTitle').value = '';
+            document.getElementById('devlogEntrySummary').value = '';
+            document.getElementById('devlogEntryContent').value = '';
+            document.getElementById('devlogEntryTags').value = '';
+            document.getElementById('devlogEntryModal').style.display = 'flex';
+        }
+
+        function editDevlogEntry(projectId, entryId) {
+            const project = siteData.devlogProjects.find(p => p.id === projectId);
+            const entry = project?.entries?.find(e => e.id === entryId);
+            if (!entry) return;
+
+            document.getElementById('devlogEntryModalTitle').textContent = '✏️ Güncelleme Düzenle';
+            document.getElementById('editingDevlogProjectId').value = projectId;
+            document.getElementById('editingDevlogEntryId').value = entryId;
+            document.getElementById('devlogEntryDate').value = entry.date;
+            document.getElementById('devlogEntryTitle').value = entry.title;
+            document.getElementById('devlogEntrySummary').value = entry.summary || '';
+            document.getElementById('devlogEntryContent').value = entry.content || '';
+            document.getElementById('devlogEntryTags').value = (entry.tags || []).join(', ');
+            document.getElementById('devlogEntryModal').style.display = 'flex';
+        }
+
+        function closeDevlogEntryModal() {
+            document.getElementById('devlogEntryModal').style.display = 'none';
+        }
+
+        function saveDevlogEntry() {
+            const projectId = parseInt(document.getElementById('editingDevlogProjectId').value);
+            const entryId = document.getElementById('editingDevlogEntryId').value;
+            const project = siteData.devlogProjects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const entryData = {
+                id: entryId ? parseInt(entryId) : Date.now(),
+                date: document.getElementById('devlogEntryDate').value,
+                title: document.getElementById('devlogEntryTitle').value,
+                summary: document.getElementById('devlogEntrySummary').value,
+                content: document.getElementById('devlogEntryContent').value,
+                tags: document.getElementById('devlogEntryTags').value.split(',').map(s => s.trim()).filter(s => s)
+            };
+
+            if (!project.entries) project.entries = [];
+
+            if (entryId) {
+                const index = project.entries.findIndex(e => e.id === parseInt(entryId));
+                if (index !== -1) project.entries[index] = entryData;
+            } else {
+                project.entries.push(entryData);
+            }
+
+            closeDevlogEntryModal();
+            renderDevlogProjectsAdmin();
+            showToast('✅ Güncelleme kaydedildi!');
+        }
+
+        function deleteDevlogEntry(projectId, entryId) {
+            if (confirm('Bu güncellemeyi silmek istediğinize emin misiniz?')) {
+                const project = siteData.devlogProjects.find(p => p.id === projectId);
+                if (project) {
+                    project.entries = project.entries.filter(e => e.id !== entryId);
+                    renderDevlogProjectsAdmin();
+                    showToast('🗑️ Güncelleme silindi!');
+                }
             }
         }
 
         // ==================== ADMIN PANEL ====================
         document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
-                e.preventDefault();
-                openAdmin();
-            }
-            if (e.key === 'Escape') {
-                closeModal();
-                if (!isLoggedIn) closeAdmin();
-            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') { e.preventDefault(); openAdmin(); }
+            if (e.key === 'Escape') { closeModal(); closeDevlogModal(); closeLightbox(); closeDevlogEntryModal(); if (!isLoggedIn) closeAdmin(); }
         });
 
         function openAdmin() {
@@ -1099,53 +1705,37 @@
         }
 
         function loadAdminForm() {
-            // Hero
             document.getElementById('heroSubtitle').value = siteData.hero.subtitle;
             document.getElementById('heroTitle').value = siteData.hero.title;
             document.getElementById('heroDesc').value = siteData.hero.desc;
             document.getElementById('heroButton').value = siteData.hero.button;
-
-            // About
             document.getElementById('aboutTitle').value = siteData.about.title;
             document.getElementById('aboutText1').value = siteData.about.text1;
             document.getElementById('aboutText2').value = siteData.about.text2;
-
-            // Skills
             renderSkillsAdmin();
-
-            // Experience
             document.getElementById('expTitle').value = siteData.experience.title;
             renderExpAdmin();
-
-            // Social
             document.getElementById('socialGithub').value = siteData.social.github;
             document.getElementById('socialGmail').value = siteData.social.gmail;
             document.getElementById('socialDiscord').value = siteData.social.discord;
-
-            // Nav
             document.getElementById('navAbout').value = siteData.nav.about;
+            document.getElementById('navDevlog').value = siteData.nav.devlog;
             document.getElementById('navProjects').value = siteData.nav.projects;
-
-            // Projects Section
+            document.getElementById('devlogSectionTitle').value = siteData.devlogSection.title;
+            document.getElementById('devlogSectionSubtitle').value = siteData.devlogSection.subtitle;
             document.getElementById('projectsTitle').value = siteData.projectsSection.title;
             document.getElementById('projectsSubtitle').value = siteData.projectsSection.subtitle;
-
-            // Footer
             document.getElementById('footerCopyright').value = siteData.footer.copyright;
             document.getElementById('footerSubtext').value = siteData.footer.subtext;
-
-            // Site Title
             document.getElementById('siteTitle').value = siteData.siteTitle;
-
-            // Firebase - önce embedded config'e bak, sonra localStorage
-            const configToShow = EMBEDDED_FIREBASE_CONFIG?.apiKey ? EMBEDDED_FIREBASE_CONFIG : 
-                                 JSON.parse(localStorage.getItem('firebaseConfig') || '{}');
-            document.getElementById('fbApiKey').value = configToShow.apiKey || '';
-            document.getElementById('fbDatabaseUrl').value = configToShow.databaseURL || '';
-            document.getElementById('fbProjectId').value = configToShow.projectId || '';
-            document.getElementById('fbAppId').value = configToShow.appId || '';
-
-            // Projects
+            
+            const cfg = firebaseConfig || {};
+            document.getElementById('fbApiKey').value = cfg.apiKey || '';
+            document.getElementById('fbDatabaseUrl').value = cfg.databaseURL || '';
+            document.getElementById('fbProjectId').value = cfg.projectId || '';
+            document.getElementById('fbAppId').value = cfg.appId || '';
+            
+            renderDevlogProjectsAdmin();
             renderProjectsAdmin();
         }
 
@@ -1168,73 +1758,38 @@
             }
         }
 
-        // ==================== SKILLS ADMIN ====================
+        // Skills & Experience Admin
         function renderSkillsAdmin() {
             document.getElementById('skillsList').innerHTML = siteData.skills.map((s, i) => `
-                <div class="skill-item">
-                    <input type="text" class="admin-input" value="${s}" style="margin-bottom:0;">
-                    <button onclick="removeSkill(${i})" class="admin-btn admin-btn-danger">×</button>
-                </div>
+                <div class="skill-item"><input type="text" class="admin-input" value="${s}" style="margin-bottom:0;"><button onclick="removeSkill(${i})" class="admin-btn admin-btn-danger">×</button></div>
             `).join('');
         }
+        function addSkill() { siteData.skills.push('Yeni Yetenek'); renderSkillsAdmin(); }
+        function removeSkill(i) { siteData.skills.splice(i, 1); renderSkillsAdmin(); }
 
-        function addSkill() {
-            siteData.skills.push('Yeni Yetenek');
-            renderSkillsAdmin();
-        }
-
-        function removeSkill(i) {
-            siteData.skills.splice(i, 1);
-            renderSkillsAdmin();
-        }
-
-        // ==================== EXPERIENCE ADMIN ====================
         function renderExpAdmin() {
             document.getElementById('expList').innerHTML = siteData.experience.items.map((e, i) => `
-                <div class="exp-item">
-                    <input type="text" class="admin-input" value="${e}" style="margin-bottom:0;">
-                    <button onclick="removeExp(${i})" class="admin-btn admin-btn-danger">×</button>
-                </div>
+                <div class="exp-item"><input type="text" class="admin-input" value="${e}" style="margin-bottom:0;"><button onclick="removeExp(${i})" class="admin-btn admin-btn-danger">×</button></div>
             `).join('');
         }
+        function addExp() { siteData.experience.items.push('Yeni deneyim'); renderExpAdmin(); }
+        function removeExp(i) { siteData.experience.items.splice(i, 1); renderExpAdmin(); }
 
-        function addExp() {
-            siteData.experience.items.push('Yeni deneyim');
-            renderExpAdmin();
-        }
-
-        function removeExp(i) {
-            siteData.experience.items.splice(i, 1);
-            renderExpAdmin();
-        }
-
-        // ==================== PROJECTS ADMIN ====================
+        // Projects Admin
         function renderProjectsAdmin() {
-            const totalProjects = siteData.projects.length;
             document.getElementById('projectsList').innerHTML = siteData.projects.map((p, i) => `
-                <div class="project-card-admin" data-index="${i}">
+                <div class="project-card-admin">
                     <div class="project-card-admin-header">
                         <div class="flex items-center gap-3">
                             <div class="flex flex-col gap-1">
-                                <button onclick="moveProjectUp(${i})" class="order-btn" ${i === 0 ? 'disabled' : ''} title="Yukarı Taşı">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                    </svg>
-                                </button>
-                                <button onclick="moveProjectDown(${i})" class="order-btn" ${i === totalProjects - 1 ? 'disabled' : ''} title="Aşağı Taşı">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </button>
+                                <button onclick="moveProjectUp(${i})" class="order-btn" ${i === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
+                                <button onclick="moveProjectDown(${i})" class="order-btn" ${i === siteData.projects.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
                             </div>
                             <div class="order-number">${i + 1}</div>
-                            <div>
-                                <h4 class="text-white font-semibold">${p.title}</h4>
-                                <p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p>
-                            </div>
+                            <div><h4 class="text-white font-semibold">${p.title}</h4><p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p></div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="editProject(${i})" class="admin-btn admin-btn-secondary">✏️ Düzenle</button>
+                            <button onclick="editProject(${i})" class="admin-btn admin-btn-secondary">✏️</button>
                             <button onclick="deleteProject(${i})" class="admin-btn admin-btn-danger">🗑️</button>
                         </div>
                     </div>
@@ -1242,42 +1797,11 @@
             `).join('');
         }
 
-        // Move project up in order
-        function moveProjectUp(index) {
-            if (index > 0) {
-                const temp = siteData.projects[index];
-                siteData.projects[index] = siteData.projects[index - 1];
-                siteData.projects[index - 1] = temp;
-                renderProjectsAdmin();
-                showToast(`📤 "${temp.title}" yukarı taşındı`);
-            }
-        }
-
-        // Move project down in order
-        function moveProjectDown(index) {
-            if (index < siteData.projects.length - 1) {
-                const temp = siteData.projects[index];
-                siteData.projects[index] = siteData.projects[index + 1];
-                siteData.projects[index + 1] = temp;
-                renderProjectsAdmin();
-                showToast(`📥 "${temp.title}" aşağı taşındı`);
-            }
-        }
+        function moveProjectUp(i) { if (i > 0) { [siteData.projects[i], siteData.projects[i-1]] = [siteData.projects[i-1], siteData.projects[i]]; renderProjectsAdmin(); } }
+        function moveProjectDown(i) { if (i < siteData.projects.length - 1) { [siteData.projects[i], siteData.projects[i+1]] = [siteData.projects[i+1], siteData.projects[i]]; renderProjectsAdmin(); } }
 
         function addNewProject() {
-            siteData.projects.push({
-                id: Date.now(),
-                title: "Yeni Proje",
-                shortDesc: "Proje açıklaması...",
-                fullDesc: "Detaylı açıklama...",
-                thumbnail: "./assets/placeholder.png",
-                screenshots: [],
-                videos: [],
-                technologies: ["Unity"],
-                platforms: ["PC"],
-                year: new Date().getFullYear().toString(),
-                downloadLink: ""
-            });
+            siteData.projects.push({ id: Date.now(), title: "Yeni Proje", shortDesc: "Açıklama...", fullDesc: "Detay...", thumbnail: "", screenshots: [], videos: [], technologies: ["Unity"], platforms: ["PC"], year: new Date().getFullYear().toString(), downloadLink: "" });
             renderProjectsAdmin();
             editProject(siteData.projects.length - 1);
         }
@@ -1290,239 +1814,95 @@
             modal.innerHTML = `
                 <div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700">
                     <h3 class="text-xl font-bold text-white mb-4">✏️ Proje Düzenle</h3>
-                    <div class="grid-2">
-                        <div>
-                            <label class="admin-label">Başlık</label>
-                            <input type="text" id="editTitle" class="admin-input" value="${p.title}">
-                        </div>
-                        <div>
-                            <label class="admin-label">Yıl</label>
-                            <input type="text" id="editYear" class="admin-input" value="${p.year}">
-                        </div>
-                    </div>
-                    <label class="admin-label">Kısa Açıklama</label>
-                    <input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}">
-                    <label class="admin-label">Detaylı Açıklama</label>
-                    <textarea id="editFullDesc" class="admin-input admin-textarea" style="min-height:150px;">${p.fullDesc}</textarea>
-                    <label class="admin-label">Thumbnail URL</label>
-                    <input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}">
-                    <label class="admin-label">Screenshots (virgülle ayır)</label>
-                    <input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}">
-                    <label class="admin-label">Videos (virgülle ayır)</label>
-                    <input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}">
-                    <label class="admin-label">Teknolojiler (virgülle ayır)</label>
-                    <input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}">
-                    <label class="admin-label">Platformlar (virgülle ayır)</label>
-                    <input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}">
-                    <label class="admin-label">Download Link</label>
-                    <input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}">
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-success">💾 Kaydet</button>
-                        <button onclick="document.getElementById('editProjectModal').remove()" class="admin-btn admin-btn-secondary">İptal</button>
-                    </div>
-                </div>
-            `;
+                    <div class="grid-2"><div><label class="admin-label">Başlık</label><input type="text" id="editTitle" class="admin-input" value="${p.title}"></div><div><label class="admin-label">Yıl</label><input type="text" id="editYear" class="admin-input" value="${p.year}"></div></div>
+                    <label class="admin-label">Kısa Açıklama</label><input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}">
+                    <label class="admin-label">Detaylı Açıklama</label><textarea id="editFullDesc" class="admin-input admin-textarea" style="min-height:150px;">${p.fullDesc}</textarea>
+                    <label class="admin-label">Thumbnail URL</label><input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}">
+                    <label class="admin-label">Screenshots (virgülle ayır)</label><input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}">
+                    <label class="admin-label">Videos (virgülle ayır)</label><input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}">
+                    <label class="admin-label">Teknolojiler (virgülle ayır)</label><input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}">
+                    <label class="admin-label">Platformlar (virgülle ayır)</label><input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}">
+                    <label class="admin-label">Download Link</label><input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}">
+                    <div class="flex gap-3 mt-4"><button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-success">💾 Kaydet</button><button onclick="document.getElementById('editProjectModal').remove()" class="admin-btn admin-btn-secondary">İptal</button></div>
+                </div>`;
             document.body.appendChild(modal);
         }
 
         function saveProjectEdit(index) {
-            siteData.projects[index] = {
-                ...siteData.projects[index],
-                title: document.getElementById('editTitle').value,
-                shortDesc: document.getElementById('editShortDesc').value,
-                fullDesc: document.getElementById('editFullDesc').value,
-                thumbnail: document.getElementById('editThumbnail').value,
-                screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s),
-                videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s),
-                technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s),
-                platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s),
-                year: document.getElementById('editYear').value,
-                downloadLink: document.getElementById('editDownload').value
-            };
+            siteData.projects[index] = { ...siteData.projects[index], title: document.getElementById('editTitle').value, shortDesc: document.getElementById('editShortDesc').value, fullDesc: document.getElementById('editFullDesc').value, thumbnail: document.getElementById('editThumbnail').value, screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s), videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s), technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s), platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s), year: document.getElementById('editYear').value, downloadLink: document.getElementById('editDownload').value };
             document.getElementById('editProjectModal').remove();
             renderProjectsAdmin();
             showToast('✅ Proje güncellendi!');
         }
 
-        function deleteProject(index) {
-            if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) {
-                siteData.projects.splice(index, 1);
-                renderProjectsAdmin();
-                showToast('🗑️ Proje silindi!');
-            }
-        }
+        function deleteProject(index) { if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) { siteData.projects.splice(index, 1); renderProjectsAdmin(); showToast('🗑️ Proje silindi!'); } }
 
-        // ==================== RENDER PROJECTS ====================
+        // Render Projects
         function renderProjects() {
             const grid = document.getElementById('projectsGrid');
-            if (!siteData.projects || siteData.projects.length === 0) {
-                grid.innerHTML = '<p class="text-sub text-center col-span-3">Henüz proje eklenmemiş.</p>';
-                return;
-            }
-            
+            if (!siteData.projects?.length) { grid.innerHTML = '<p class="text-sub text-center col-span-3">No projects added yet.</p>'; return; }
             grid.innerHTML = siteData.projects.map(p => `
                 <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(${p.id})">
-                    <div class="aspect-video overflow-hidden">
-                        <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'">
-                    </div>
+                    <div class="aspect-video overflow-hidden"><img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'"></div>
                     <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-main">${p.title}</h3>
-                            <span class="text-sm text-sub">${p.year}</span>
-                        </div>
+                        <div class="flex justify-between items-start mb-2"><h3 class="text-xl font-bold text-main">${p.title}</h3><span class="text-sm text-sub">${p.year}</span></div>
                         <p class="text-sub mb-4">${p.shortDesc}</p>
-                        <div class="flex flex-wrap gap-2">
-                            ${p.platforms.map(pl => `<span class="text-xs px-2 py-1 section-secondary text-sub rounded">${pl}</span>`).join('')}
-                        </div>
+                        <div class="flex flex-wrap gap-2 mb-4">${p.platforms.map(pl => `<span class="text-xs px-2 py-1 section-secondary text-sub rounded">${pl}</span>`).join('')}</div>
+                        <button class="w-full py-2 border border-main text-main text-sm font-medium hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] transition-all rounded">
+                            Open Project
+                        </button>
                     </div>
                 </div>
             `).join('');
-            
             document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
         }
 
-        // ==================== SLIDESHOW ====================
+        // Slideshow
         function initSlideshow() {
             const container = document.getElementById('heroSlideshow');
-            container.innerHTML = '';
             const allImages = [];
-
-            if (siteData.projects) {
-                siteData.projects.forEach(p => {
-                    if (p.thumbnail) allImages.push(p.thumbnail);
-                    if (p.screenshots) p.screenshots.forEach(s => { if (!allImages.includes(s)) allImages.push(s); });
-                });
-            }
-
-            if (allImages.length === 0) {
-                // Varsayılan bir arka plan ekle
-                container.innerHTML = '<div class="hero-slide active" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);"></div>';
-                return;
-            }
-
-            allImages.forEach((img, i) => {
-                const slide = document.createElement('div');
-                slide.className = `hero-slide ${i === 0 ? 'active' : ''}`;
-                slide.innerHTML = `<img src="${img}" alt="Screenshot" onerror="this.parentElement.style.display='none'">`;
-                container.appendChild(slide);
-            });
-
-            if (allImages.length > 1) {
-                let current = 0;
-                setInterval(() => {
-                    const slides = document.querySelectorAll('.hero-slide');
-                    if (slides.length > 0) {
-                        slides[current].classList.remove('active');
-                        current = (current + 1) % slides.length;
-                        slides[current].classList.add('active');
-                    }
-                }, 4000);
-            }
+            siteData.projects?.forEach(p => { if (p.thumbnail) allImages.push(p.thumbnail); p.screenshots?.forEach(s => { if (!allImages.includes(s)) allImages.push(s); }); });
+            if (!allImages.length) { container.innerHTML = '<div class="hero-slide active" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);"></div>'; return; }
+            container.innerHTML = allImages.map((img, i) => `<div class="hero-slide ${i === 0 ? 'active' : ''}"><img src="${img}" alt="Screenshot" onerror="this.parentElement.style.display='none'"></div>`).join('');
+            if (allImages.length > 1) { let current = 0; setInterval(() => { const slides = document.querySelectorAll('.hero-slide'); if (slides.length) { slides[current].classList.remove('active'); current = (current + 1) % slides.length; slides[current].classList.add('active'); } }, 4000); }
         }
 
-        // ==================== UTILITIES ====================
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        }
+        // Utilities
+        function toggleTheme() { document.body.classList.toggle('dark'); localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); }
+        if (localStorage.getItem('theme') === 'light') document.body.classList.remove('dark');
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.remove('dark');
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function showContactInfo(type, value) {
-            navigator.clipboard.writeText(value);
-            showToast(`${type === 'gmail' ? '📧' : '🎮'} ${value} (Kopyalandı!)`);
-        }
+        function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
+        function showContactInfo(type, value) { navigator.clipboard.writeText(value); showToast(`${type === 'gmail' ? '📧' : '🎮'} ${value} (Copied!)`); }
 
         function openModal(id) {
             const project = siteData.projects.find(p => p.id === id);
             if (!project) return;
-
             document.getElementById('modalContent').innerHTML = `
                 <div class="grid lg:grid-cols-2 gap-8">
                     <div>
-                        <div id="mainMedia" class="w-full aspect-video mb-4 bg-black rounded-lg overflow-hidden">
-                            <img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x450?text=No+Image'">
-                        </div>
-                        ${(project.screenshots?.length || project.videos?.length) ? `
-                            <div class="grid grid-cols-4 gap-2">
-                                ${project.videos?.map(v => `
-                                    <div class="relative w-full aspect-video cursor-pointer hover:opacity-80 bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('${v}')">
-                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                        <span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span>
-                                    </div>
-                                `).join('') || ''}
-                                ${project.screenshots?.slice(0, 4 - (project.videos?.length || 0)).map(s => `
-                                    <img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 rounded" onclick="showImage('${s}')" onerror="this.style.display='none'">
-                                `).join('') || ''}
-                            </div>
-                        ` : ''}
+                        <div id="mainMedia" class="w-full aspect-video mb-4 bg-black rounded-lg overflow-hidden"><img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x450?text=No+Image'"></div>
+                        ${(project.screenshots?.length || project.videos?.length) ? `<div class="grid grid-cols-4 gap-2">${project.videos?.map(v => `<div class="relative w-full aspect-video cursor-pointer hover:opacity-80 bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('${v}')"><svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span></div>`).join('') || ''}${project.screenshots?.slice(0, 4 - (project.videos?.length || 0)).map(s => `<img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer hover:opacity-80 rounded" onclick="showImage('${s}')" onerror="this.style.display='none'">`).join('') || ''}</div>` : ''}
                     </div>
                     <div>
-                        <div class="flex items-center gap-4 mb-4">
-                            <h2 class="text-3xl font-bold text-main">${project.title}</h2>
-                            <span class="text-sub">${project.year}</span>
-                        </div>
+                        <div class="flex items-center gap-4 mb-4"><h2 class="text-3xl font-bold text-main">${project.title}</h2><span class="text-sub">${project.year}</span></div>
                         <p class="text-sub text-lg leading-relaxed mb-6" style="white-space: pre-line;">${project.fullDesc}</p>
-                        <div class="mb-6">
-                            <h4 class="font-bold mb-3 text-main">Technologies</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${project.technologies.map(t => `<span class="px-3 py-1 border border-main text-sm rounded text-main">${t}</span>`).join('')}
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <h4 class="font-bold mb-3 text-main">Platforms</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${project.platforms.map(p => `<span class="px-3 py-1 text-sm rounded" style="background-color: var(--accent); color: var(--bg-primary);">${p}</span>`).join('')}
-                            </div>
-                        </div>
-                        ${project.downloadLink ? `
-                            <a href="${project.downloadLink}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 font-semibold hover:opacity-80 rounded" style="background-color: var(--accent); color: var(--bg-primary);">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                </svg>
-                                Download Demo
-                            </a>
-                        ` : ''}
+                        <div class="mb-6"><h4 class="font-bold mb-3 text-main">Technologies</h4><div class="flex flex-wrap gap-2">${project.technologies.map(t => `<span class="px-3 py-1 border border-main text-sm rounded text-main">${t}</span>`).join('')}</div></div>
+                        <div class="mb-6"><h4 class="font-bold mb-3 text-main">Platforms</h4><div class="flex flex-wrap gap-2">${project.platforms.map(p => `<span class="px-3 py-1 text-sm rounded" style="background-color: var(--accent); color: var(--bg-primary);">${p}</span>`).join('')}</div></div>
+                        ${project.downloadLink ? `<a href="${project.downloadLink}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 font-semibold hover:opacity-80 rounded" style="background-color: var(--accent); color: var(--bg-primary);"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>Download Demo</a>` : ''}
                     </div>
-                </div>
-            `;
-
+                </div>`;
             document.getElementById('projectModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeModal() {
-            document.getElementById('projectModal').classList.add('hidden');
-            document.body.style.overflow = '';
-        }
+        function closeModal() { document.getElementById('projectModal').classList.add('hidden'); document.body.style.overflow = ''; }
+        function showVideo(url) { document.getElementById('mainMedia').innerHTML = `<video src="${url}" class="w-full h-full" controls autoplay></video>`; }
+        function showImage(url) { document.getElementById('mainMedia').innerHTML = `<img src="${url}" alt="Screenshot" class="w-full h-full object-cover">`; }
 
-        function showVideo(url) {
-            document.getElementById('mainMedia').innerHTML = `<video src="${url}" class="w-full h-full" controls autoplay></video>`;
-        }
+        // Scroll Reveal
+        const revealObserver = new IntersectionObserver((entries) => { entries.forEach((entry, i) => { if (entry.isIntersecting) setTimeout(() => entry.target.classList.add('revealed'), i * 100); }); }, { threshold: 0.1 });
 
-        function showImage(url) {
-            document.getElementById('mainMedia').innerHTML = `<img src="${url}" alt="Screenshot" class="w-full h-full object-cover">`;
-        }
-
-        // ==================== SCROLL REVEAL ====================
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, i) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => entry.target.classList.add('revealed'), i * 100);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        // ==================== INIT ====================
+        // Init
         initFirebase();
         document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
     </script>
