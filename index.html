@@ -42,18 +42,30 @@
         }
 
         .project-card, .devlog-project-card {
-            transition: all 0.4s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background-color: var(--bg-card);
+            display: flex;
+            flex-direction: column;
         }
         .project-card:hover, .devlog-project-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
         .project-card img, .devlog-project-card img {
-            transition: filter 0.4s ease;
+            transition: all 0.4s ease;
             filter: grayscale(30%);
         }
         .project-card:hover img, .devlog-project-card:hover img {
             filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+        .project-card .card-content, .devlog-project-card .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .project-card .card-body, .devlog-project-card .card-body {
+            flex: 1;
         }
         .modal-overlay {
             animation: fadeIn 0.3s ease;
@@ -209,6 +221,16 @@
             background: #222; border: 1px solid #333; border-radius: 12px;
             padding: 16px; margin-bottom: 12px;
             transition: all 0.2s ease;
+            cursor: grab;
+        }
+        .project-card-admin.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+            cursor: grabbing;
+        }
+        .project-card-admin.drag-over {
+            border-color: #fff;
+            background: #333;
         }
         .project-card-admin-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
@@ -255,6 +277,39 @@
             background: #fff; color: #000; width: 28px; height: 28px;
             border-radius: 6px; display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 12px;
+        }
+
+        /* Drag handle */
+        .drag-handle {
+            cursor: grab;
+            padding: 8px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .drag-handle:hover {
+            color: #fff;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* Category badge for admin */
+        .category-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .category-badge.main {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+        .category-badge.other {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
         }
 
         /* ==================== DEVLOG STYLES ==================== */
@@ -510,6 +565,17 @@
             color: var(--text-secondary);
             font-family: monospace;
         }
+
+        /* Other Projects subtitle */
+        .other-projects-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body class="dark">
@@ -649,12 +715,19 @@
                                 <input type="text" id="projectsSubtitle" class="admin-input" placeholder="A collection of games...">
                             </div>
                         </div>
+                        <div class="grid-2 mt-4">
+                            <div>
+                                <label class="admin-label">Other Projects Başlığı</label>
+                                <input type="text" id="otherProjectsTitle" class="admin-input" placeholder="Other Projects">
+                            </div>
+                        </div>
                     </div>
                     <div class="admin-section">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="admin-section-title mb-0">📁 Projeler</div>
+                            <div class="admin-section-title mb-0">📁 Projeler (Sürükleyerek sıralayın)</div>
                             <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
                         </div>
+                        <p class="text-gray-400 text-sm mb-4">💡 Projeleri sürükleyerek sıralayabilirsiniz. "Main" projeler üstte, "Other" projeler alt başlıkta görünür.</p>
                         <div id="projectsList"></div>
                     </div>
                 </div>
@@ -932,7 +1005,9 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                 <h2 id="projectsTitleDisplay" class="text-4xl font-bold mb-4 text-main">My Projects</h2>
                 <p id="projectsSubtitleDisplay" class="text-sub text-lg"></p>
             </div>
-            <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div id="mainProjectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <h3 id="otherProjectsTitleDisplay" class="other-projects-title scroll-reveal" style="display:none;">Other Projects</h3>
+            <div id="otherProjectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </div>
     </section>
 
@@ -1060,7 +1135,8 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
             ],
             projectsSection: {
                 title: "My Projects",
-                subtitle: "A collection of games I've developed and contributed to"
+                subtitle: "A collection of games I've developed and contributed to",
+                otherProjectsTitle: "Other Projects"
             },
             footer: {
                 copyright: "© 2024 Game Developer Portfolio. All rights reserved.",
@@ -1079,7 +1155,8 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                     technologies: ["Unity", "Blender", "C#", "FishNet", "Steam"],
                     platforms: ["PC"],
                     year: "2025 - 2026",
-                    downloadLink: ""
+                    downloadLink: "",
+                    category: "main"
                 },
                 {
                     id: 2,
@@ -1092,14 +1169,15 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                     technologies: ["Unity", "Aseprite", "C#"],
                     platforms: ["PC"],
                     year: "2025",
-                    downloadLink: "https://neutrony.itch.io/level-evil-demo"
+                    downloadLink: "https://neutrony.itch.io/level-evil-demo",
+                    category: "other"
                 }
             ]
         };
 
         // ==================== STATE ====================
         let siteData = JSON.parse(JSON.stringify(defaultData));
-        let adminPassword = localStorage.getItem('adminPassword') || 'admin123';
+        let adminPassword = localStorage.getItem('adminPassword') || '8520';
         let isLoggedIn = false;
         let firebaseDb = null;
         let firebaseConnected = false;
@@ -1118,19 +1196,21 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                     }
                     firebaseDb = firebase.database();
                     
-                    firebaseDb.ref('.info/connected').on('value', (snap) => {
+                    // Check connection once
+                    firebaseDb.ref('.info/connected').once('value').then((snap) => {
                         firebaseConnected = snap.val() === true;
                         updateFirebaseStatus(firebaseConnected ? 'connected' : 'disconnected');
                     });
                     
-                    firebaseDb.ref('siteData').on('value', (snapshot) => {
+                    // Load data ONCE (not realtime)
+                    firebaseDb.ref('siteData').once('value').then((snapshot) => {
                         const data = snapshot.val();
                         if (data) {
                             siteData = mergeWithDefaults(data);
                             applyAllData();
                         }
                         hideLoading();
-                    }, () => {
+                    }).catch(() => {
                         loadLocalData();
                         applyAllData();
                         hideLoading();
@@ -1150,6 +1230,12 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
         }
 
         function mergeWithDefaults(data) {
+            // Ensure projects have category field
+            const projects = (data.projects || defaultData.projects).map(p => ({
+                ...p,
+                category: p.category || 'main'
+            }));
+            
             return {
                 ...JSON.parse(JSON.stringify(defaultData)),
                 ...data,
@@ -1162,7 +1248,7 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                 projectsSection: { ...defaultData.projectsSection, ...(data.projectsSection || {}) },
                 footer: { ...defaultData.footer, ...(data.footer || {}) },
                 skills: data.skills || defaultData.skills,
-                projects: data.projects || defaultData.projects,
+                projects: projects,
                 devlogProjects: data.devlogProjects || defaultData.devlogProjects
             };
         }
@@ -1267,7 +1353,8 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
             };
             siteData.projectsSection = {
                 title: document.getElementById('projectsTitle')?.value || siteData.projectsSection.title,
-                subtitle: document.getElementById('projectsSubtitle')?.value || siteData.projectsSection.subtitle
+                subtitle: document.getElementById('projectsSubtitle')?.value || siteData.projectsSection.subtitle,
+                otherProjectsTitle: document.getElementById('otherProjectsTitle')?.value || siteData.projectsSection.otherProjectsTitle
             };
             siteData.footer = {
                 copyright: document.getElementById('footerCopyright')?.value || siteData.footer.copyright,
@@ -1309,6 +1396,7 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
             document.getElementById('devlogSubtitleDisplay').textContent = siteData.devlogSection.subtitle;
             document.getElementById('projectsTitleDisplay').textContent = siteData.projectsSection.title;
             document.getElementById('projectsSubtitleDisplay').textContent = siteData.projectsSection.subtitle;
+            document.getElementById('otherProjectsTitleDisplay').textContent = siteData.projectsSection.otherProjectsTitle || 'Other Projects';
             document.getElementById('footerCopyrightDisplay').textContent = siteData.footer.copyright;
             document.getElementById('footerSubtextDisplay').textContent = siteData.footer.subtext;
             document.title = siteData.siteTitle;
@@ -1360,12 +1448,14 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                         <div class="aspect-video overflow-hidden">
                             <img src="${project.thumbnail}" alt="${project.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'">
                         </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-main mb-2">${project.name}</h3>
-                            <p class="text-sub text-sm mb-4">${project.description}</p>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-sub">${entries.length} update${entries.length !== 1 ? 's' : ''}</span>
-                                <span class="text-sub">Last: ${lastUpdate}</span>
+                        <div class="card-content p-6">
+                            <div class="card-body">
+                                <h3 class="text-xl font-bold text-main mb-2">${project.name}</h3>
+                                <p class="text-sub text-sm mb-4">${project.description}</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-sub">${entries.length} update${entries.length !== 1 ? 's' : ''}</span>
+                                    <span class="text-sub">Last: ${lastUpdate}</span>
+                                </div>
                             </div>
                             <button class="mt-4 w-full py-2 border border-main text-main text-sm font-medium hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] transition-all rounded">
                                 Open Devlog
@@ -1735,6 +1825,7 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
             document.getElementById('devlogSectionSubtitle').value = siteData.devlogSection.subtitle;
             document.getElementById('projectsTitle').value = siteData.projectsSection.title;
             document.getElementById('projectsSubtitle').value = siteData.projectsSection.subtitle;
+            document.getElementById('otherProjectsTitle').value = siteData.projectsSection.otherProjectsTitle || 'Other Projects';
             document.getElementById('footerCopyright').value = siteData.footer.copyright;
             document.getElementById('footerSubtext').value = siteData.footer.subtext;
             document.getElementById('siteTitle').value = siteData.siteTitle;
@@ -1785,20 +1876,35 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
         function addExp() { siteData.experience.items.push('Yeni deneyim'); renderExpAdmin(); }
         function removeExp(i) { siteData.experience.items.splice(i, 1); renderExpAdmin(); }
 
-        // Projects Admin
+        // ==================== DRAG & DROP PROJECTS ====================
+        let draggedProjectIndex = null;
+
         function renderProjectsAdmin() {
-            document.getElementById('projectsList').innerHTML = siteData.projects.map((p, i) => `
-                <div class="project-card-admin">
+            const list = document.getElementById('projectsList');
+            list.innerHTML = siteData.projects.map((p, i) => `
+                <div class="project-card-admin" draggable="true" data-index="${i}" 
+                     ondragstart="handleDragStart(event, ${i})" 
+                     ondragover="handleDragOver(event)" 
+                     ondragenter="handleDragEnter(event)"
+                     ondragleave="handleDragLeave(event)"
+                     ondrop="handleDrop(event, ${i})"
+                     ondragend="handleDragEnd(event)">
                     <div class="project-card-admin-header">
                         <div class="flex items-center gap-3">
-                            <div class="flex flex-col gap-1">
-                                <button onclick="moveProjectUp(${i})" class="order-btn" ${i === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>
-                                <button onclick="moveProjectDown(${i})" class="order-btn" ${i === siteData.projects.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
+                            <div class="drag-handle">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+                                </svg>
                             </div>
                             <div class="order-number">${i + 1}</div>
-                            <div><h4 class="text-white font-semibold">${p.title}</h4><p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p></div>
+                            <span class="category-badge ${p.category || 'main'}">${p.category === 'other' ? 'Other' : 'Main'}</span>
+                            <div>
+                                <h4 class="text-white font-semibold">${p.title}</h4>
+                                <p class="text-gray-400 text-sm">${p.shortDesc.substring(0, 50)}...</p>
+                            </div>
                         </div>
                         <div class="flex gap-2">
+                            <button onclick="toggleProjectCategory(${i})" class="admin-btn admin-btn-secondary text-sm">${p.category === 'other' ? '⬆️ Main' : '⬇️ Other'}</button>
                             <button onclick="editProject(${i})" class="admin-btn admin-btn-secondary">✏️</button>
                             <button onclick="deleteProject(${i})" class="admin-btn admin-btn-danger">🗑️</button>
                         </div>
@@ -1807,11 +1913,62 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
             `).join('');
         }
 
+        function handleDragStart(e, index) {
+            draggedProjectIndex = index;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const card = e.target.closest('.project-card-admin');
+            if (card) card.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            const card = e.target.closest('.project-card-admin');
+            if (card) card.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, targetIndex) {
+            e.preventDefault();
+            const card = e.target.closest('.project-card-admin');
+            if (card) card.classList.remove('drag-over');
+            
+            if (draggedProjectIndex !== null && draggedProjectIndex !== targetIndex) {
+                const draggedItem = siteData.projects[draggedProjectIndex];
+                siteData.projects.splice(draggedProjectIndex, 1);
+                siteData.projects.splice(targetIndex, 0, draggedItem);
+                renderProjectsAdmin();
+                showToast('📦 Proje sırası güncellendi!');
+            }
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.project-card-admin').forEach(card => {
+                card.classList.remove('drag-over');
+            });
+            draggedProjectIndex = null;
+        }
+
+        function toggleProjectCategory(index) {
+            const project = siteData.projects[index];
+            project.category = project.category === 'other' ? 'main' : 'other';
+            renderProjectsAdmin();
+            showToast(`📁 Proje "${project.category === 'other' ? 'Other Projects' : 'Main Projects'}" olarak işaretlendi`);
+        }
+
         function moveProjectUp(i) { if (i > 0) { [siteData.projects[i], siteData.projects[i-1]] = [siteData.projects[i-1], siteData.projects[i]]; renderProjectsAdmin(); } }
         function moveProjectDown(i) { if (i < siteData.projects.length - 1) { [siteData.projects[i], siteData.projects[i+1]] = [siteData.projects[i+1], siteData.projects[i]]; renderProjectsAdmin(); } }
 
         function addNewProject() {
-            siteData.projects.push({ id: Date.now(), title: "Yeni Proje", shortDesc: "Açıklama...", fullDesc: "Detay...", thumbnail: "", screenshots: [], videos: [], technologies: ["Unity"], platforms: ["PC"], year: new Date().getFullYear().toString(), downloadLink: "" });
+            siteData.projects.push({ id: Date.now(), title: "Yeni Proje", shortDesc: "Açıklama...", fullDesc: "Detay...", thumbnail: "", screenshots: [], videos: [], technologies: ["Unity"], platforms: ["PC"], year: new Date().getFullYear().toString(), downloadLink: "", category: "main" });
             renderProjectsAdmin();
             editProject(siteData.projects.length - 1);
         }
@@ -1825,6 +1982,15 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
                 <div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700">
                     <h3 class="text-xl font-bold text-white mb-4">✏️ Proje Düzenle</h3>
                     <div class="grid-2"><div><label class="admin-label">Başlık</label><input type="text" id="editTitle" class="admin-input" value="${p.title}"></div><div><label class="admin-label">Yıl</label><input type="text" id="editYear" class="admin-input" value="${p.year}"></div></div>
+                    <div class="grid-2">
+                        <div>
+                            <label class="admin-label">Kategori</label>
+                            <select id="editCategory" class="admin-input">
+                                <option value="main" ${p.category !== 'other' ? 'selected' : ''}>Main Projects</option>
+                                <option value="other" ${p.category === 'other' ? 'selected' : ''}>Other Projects</option>
+                            </select>
+                        </div>
+                    </div>
                     <label class="admin-label">Kısa Açıklama</label><input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}">
                     <label class="admin-label">Detaylı Açıklama</label><textarea id="editFullDesc" class="admin-input admin-textarea" style="min-height:150px;">${p.fullDesc}</textarea>
                     <label class="admin-label">Thumbnail URL</label><input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}">
@@ -1839,7 +2005,7 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
         }
 
         function saveProjectEdit(index) {
-            siteData.projects[index] = { ...siteData.projects[index], title: document.getElementById('editTitle').value, shortDesc: document.getElementById('editShortDesc').value, fullDesc: document.getElementById('editFullDesc').value, thumbnail: document.getElementById('editThumbnail').value, screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s), videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s), technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s), platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s), year: document.getElementById('editYear').value, downloadLink: document.getElementById('editDownload').value };
+            siteData.projects[index] = { ...siteData.projects[index], title: document.getElementById('editTitle').value, shortDesc: document.getElementById('editShortDesc').value, fullDesc: document.getElementById('editFullDesc').value, thumbnail: document.getElementById('editThumbnail').value, screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s), videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s), technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s), platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s), year: document.getElementById('editYear').value, downloadLink: document.getElementById('editDownload').value, category: document.getElementById('editCategory').value };
             document.getElementById('editProjectModal').remove();
             renderProjectsAdmin();
             showToast('✅ Proje güncellendi!');
@@ -1847,24 +2013,57 @@ Yukarıda göründüğü gibi çalışıyor."></textarea>
 
         function deleteProject(index) { if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) { siteData.projects.splice(index, 1); renderProjectsAdmin(); showToast('🗑️ Proje silindi!'); } }
 
-        // Render Projects
+        // Render Projects with categories
         function renderProjects() {
-            const grid = document.getElementById('projectsGrid');
-            if (!siteData.projects?.length) { grid.innerHTML = '<p class="text-sub text-center col-span-3">No projects added yet.</p>'; return; }
-            grid.innerHTML = siteData.projects.map(p => `
-                <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden" onclick="openModal(${p.id})">
-                    <div class="aspect-video overflow-hidden"><img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'"></div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2"><h3 class="text-xl font-bold text-main">${p.title}</h3><span class="text-sm text-sub">${p.year}</span></div>
-                        <p class="text-sub mb-4">${p.shortDesc}</p>
-                        <div class="flex flex-wrap gap-2 mb-4">${p.platforms.map(pl => `<span class="text-xs px-2 py-1 section-secondary text-sub rounded">${pl}</span>`).join('')}</div>
-                        <button class="w-full py-2 border border-main text-main text-sm font-medium hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] transition-all rounded">
+            const mainProjects = siteData.projects.filter(p => p.category !== 'other');
+            const otherProjects = siteData.projects.filter(p => p.category === 'other');
+            
+            const mainGrid = document.getElementById('mainProjectsGrid');
+            const otherGrid = document.getElementById('otherProjectsGrid');
+            const otherTitle = document.getElementById('otherProjectsTitleDisplay');
+            
+            // Render main projects
+            if (!mainProjects.length) {
+                mainGrid.innerHTML = '<p class="text-sub text-center col-span-3">No main projects added yet.</p>';
+            } else {
+                mainGrid.innerHTML = mainProjects.map(p => renderProjectCard(p)).join('');
+            }
+            
+            // Render other projects
+            if (otherProjects.length) {
+                otherTitle.style.display = 'block';
+                otherGrid.innerHTML = otherProjects.map(p => renderProjectCard(p)).join('');
+            } else {
+                otherTitle.style.display = 'none';
+                otherGrid.innerHTML = '';
+            }
+            
+            document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
+        }
+        
+        function renderProjectCard(p) {
+            return `
+                <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg overflow-hidden border border-main" onclick="openModal(${p.id})">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'">
+                    </div>
+                    <div class="card-content p-6">
+                        <div class="card-body">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-main">${p.title}</h3>
+                                <span class="text-sm text-sub">${p.year}</span>
+                            </div>
+                            <p class="text-sub mb-4">${p.shortDesc}</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${p.platforms.map(pl => `<span class="text-xs px-2 py-1 section-secondary text-sub rounded">${pl}</span>`).join('')}
+                            </div>
+                        </div>
+                        <button class="mt-4 w-full py-2 border border-main text-main text-sm font-medium hover:bg-[var(--accent)] hover:text-[var(--bg-primary)] transition-all rounded">
                             Open Project
                         </button>
                     </div>
                 </div>
-            `).join('');
-            document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
+            `;
         }
 
         // Slideshow
