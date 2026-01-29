@@ -375,6 +375,7 @@
         .devlog-inline-media { display: inline-block; }
         .devlog-inline-media img { max-width: 100%; max-height: 400px; border-radius: 8px; border: 1px solid var(--border-color); }
         .devlog-inline-media video { max-width: 500px; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .devlog-inline-media iframe { max-width: 560px; width: 100%; aspect-ratio: 16/9; border-radius: 8px; border: 1px solid var(--border-color); }
         .devlog-entry-body { margin-top: 12px; }
         .devlog-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
         .devlog-tag {
@@ -414,6 +415,7 @@
         .media-lightbox.open { display: flex; }
         .media-lightbox-content { max-width: 90vw; max-height: 90vh; border-radius: 8px; overflow: hidden; }
         .media-lightbox-content img, .media-lightbox-content video { max-width: 100%; max-height: 90vh; object-fit: contain; }
+        .media-lightbox-content iframe { width: 80vw; max-width: 960px; aspect-ratio: 16/9; }
         .media-lightbox-close {
             position: absolute; top: 20px; right: 20px; width: 48px; height: 48px;
             background: rgba(255,255,255,0.1); border: none; border-radius: 50%;
@@ -577,7 +579,7 @@
                             <div class="admin-section-title mb-0">📁 Projeler (Sürükleyerek sıralayın)</div>
                             <button onclick="addNewProject()" class="admin-btn admin-btn-primary">+ Yeni Proje</button>
                         </div>
-                        <p class="text-gray-400 text-sm mb-4">💡 Projeleri sürükleyerek sıralayabilirsiniz.</p>
+                        <p class="text-gray-400 text-sm mb-4">💡 Projeleri sürükleyerek sıralayabilirsiniz. Videos alanına YouTube linki veya dosya yolu ekleyebilirsiniz.</p>
                         <div id="projectsList"></div>
                     </div>
                 </div>
@@ -702,8 +704,13 @@
             <input type="text" id="devlogEntryTitle" class="admin-input" placeholder="Lobby sistemini baştan yazdım">
             <label class="admin-label">Özet (1-2 cümle)</label>
             <input type="text" id="devlogEntrySummary" class="admin-input" placeholder="FishNet ile yeni lobby sistemi">
-            <label class="admin-label">Detaylı Açıklama</label>
-            <textarea id="devlogEntryContent" class="admin-input admin-textarea" style="min-height:180px;" placeholder="Açıklama..."></textarea>
+            <label class="admin-label">Detaylı Açıklama (YouTube linki veya dosya yolu ekleyebilirsiniz)</label>
+            <textarea id="devlogEntryContent" class="admin-input admin-textarea" style="min-height:180px;" placeholder="Açıklama...
+
+Medya eklemek için yeni satıra yazın:
+./assets/image.png
+./assets/video.mp4
+https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
             <label class="admin-label">Etiketler (virgülle ayırın)</label>
             <input type="text" id="devlogEntryTags" class="admin-input" placeholder="Multiplayer, UI...">
             <div class="flex gap-3 mt-4">
@@ -849,6 +856,64 @@
     </footer>
 
     <script>
+        // ==================== YOUTUBE HELPERS ====================
+        function isYouTubeUrl(url) {
+            return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+        }
+
+        function getYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function getYouTubeThumbnail(videoId) {
+            return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        }
+
+        function renderVideoElement(url, autoplay = false, controls = true) {
+            if (isYouTubeUrl(url)) {
+                const videoId = getYouTubeId(url);
+                if (videoId) {
+                    const autoplayParam = autoplay ? '&autoplay=1' : '';
+                    return `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0${autoplayParam}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                }
+            }
+            return `<video src="${url}" class="w-full h-full" ${controls ? 'controls' : ''} ${autoplay ? 'autoplay' : ''}></video>`;
+        }
+
+        function renderVideoThumbnail(url, onclick) {
+            if (isYouTubeUrl(url)) {
+                const videoId = getYouTubeId(url);
+                if (videoId) {
+                    return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="${onclick}">
+                        <img src="${getYouTubeThumbnail(videoId)}" alt="YouTube Video" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <div class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <span class="absolute bottom-1 right-1 text-xs text-white bg-red-600 px-1 rounded">YouTube</span>
+                    </div>`;
+                }
+            }
+            // Local video - show first frame as thumbnail
+            return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="${onclick}">
+                <video src="${url}" class="w-full h-full object-cover" muted preload="metadata" onloadeddata="this.currentTime=0.5"></video>
+                <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                </div>
+                <span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span>
+            </div>`;
+        }
+
+        function isVideoUrl(url) {
+            return url && (url.match(/\.(mp4|webm|ogg)$/i) || isYouTubeUrl(url));
+        }
+
         // ==================== EMBEDDED FIREBASE CONFIG ====================
         const EMBEDDED_FIREBASE_CONFIG = {
             apiKey: "AIzaSyCJfiH5G4_3cqN5fH41SoXAyG_KMrP86ho",
@@ -1129,18 +1194,53 @@
             if (!content) return '';
             return content.split('\n').map(line => {
                 const t = line.trim();
-                if (t.match(/\.(png|jpg|jpeg|gif|webp)$/i)) return `<div class="devlog-inline-media my-3"><img src="${t}" alt="Media" class="cursor-pointer" onclick="openLightbox('${t}', false)" onerror="this.parentElement.innerHTML='⚠️ Failed to load'"></div>`;
-                if (t.match(/\.(mp4|webm|ogg)$/i)) return `<div class="devlog-inline-media my-3"><div class="relative inline-block cursor-pointer" onclick="openLightbox('${t}', true)"><video src="${t}" muted></video><div class="absolute inset-0 flex items-center justify-center bg-black/40"><div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center"><svg class="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div></div></div>`;
+                // Check for images
+                if (t.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+                    return `<div class="devlog-inline-media my-3"><img src="${t}" alt="Media" class="cursor-pointer" onclick="openLightbox('${t}', 'image')" onerror="this.parentElement.innerHTML='⚠️ Failed to load'"></div>`;
+                }
+                // Check for YouTube
+                if (isYouTubeUrl(t)) {
+                    const videoId = getYouTubeId(t);
+                    if (videoId) {
+                        return `<div class="devlog-inline-media my-3">
+                            <div class="relative inline-block cursor-pointer" onclick="openLightbox('${t}', 'youtube')">
+                                <img src="${getYouTubeThumbnail(videoId)}" alt="YouTube Video" class="rounded-lg border border-gray-600" style="max-width: 400px;">
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
+                                    <div class="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center">
+                                        <svg class="w-7 h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+                }
+                // Check for local videos
+                if (t.match(/\.(mp4|webm|ogg)$/i)) {
+                    return `<div class="devlog-inline-media my-3"><div class="relative inline-block cursor-pointer" onclick="openLightbox('${t}', 'video')"><video src="${t}" muted preload="metadata" onloadeddata="this.currentTime=0.5" class="rounded-lg border border-gray-600" style="max-width: 400px;"></video><div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg"><div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center"><svg class="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="absolute bottom-2 right-2 text-xs text-white bg-black/70 px-1.5 py-0.5 rounded">VIDEO</span></div></div>`;
+                }
                 if (t) return `<p class="text-sub leading-relaxed mb-2">${t}</p>`;
                 return '<div class="h-2"></div>';
             }).join('');
         }
 
-        function openLightbox(src, isVideo) {
-            document.getElementById('lightboxContent').innerHTML = isVideo ? `<video src="${src}" controls autoplay class="rounded-lg"></video>` : `<img src="${src}" alt="Preview" class="rounded-lg">`;
+        function openLightbox(src, type) {
+            const content = document.getElementById('lightboxContent');
+            if (type === 'youtube') {
+                const videoId = getYouTubeId(src);
+                if (videoId) {
+                    content.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                }
+            } else if (type === 'video') {
+                content.innerHTML = `<video src="${src}" controls autoplay class="rounded-lg"></video>`;
+            } else {
+                content.innerHTML = `<img src="${src}" alt="Preview" class="rounded-lg">`;
+            }
             document.getElementById('mediaLightbox').classList.add('open');
         }
-        function closeLightbox() { document.getElementById('mediaLightbox').classList.remove('open'); }
+        function closeLightbox() { 
+            document.getElementById('mediaLightbox').classList.remove('open'); 
+            document.getElementById('lightboxContent').innerHTML = '';
+        }
 
         // ==================== DEVLOG ADMIN ====================
         function renderDevlogProjectsAdmin() {
@@ -1261,7 +1361,7 @@
         function toggleProjectCategory(index) { siteData.projects[index].category = siteData.projects[index].category === 'other' ? 'main' : 'other'; renderProjectsAdmin(); showToast(`📁 Proje kategorisi değiştirildi`); }
         function addNewProject() { siteData.projects.push({ id: Date.now(), title: "Yeni Proje", shortDesc: "Açıklama...", fullDesc: "Detay...", thumbnail: "", screenshots: [], videos: [], technologies: ["Unity"], platforms: ["PC"], year: new Date().getFullYear().toString(), downloadLink: "", category: "main" }); renderProjectsAdmin(); editProject(siteData.projects.length - 1); }
 
-        function editProject(index) { const p = siteData.projects[index]; const modal = document.createElement('div'); modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4'; modal.id = 'editProjectModal'; modal.innerHTML = `<div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700"><h3 class="text-xl font-bold text-white mb-4">✏️ Proje Düzenle</h3><div class="grid-2"><div><label class="admin-label">Başlık</label><input type="text" id="editTitle" class="admin-input" value="${p.title}"></div><div><label class="admin-label">Yıl</label><input type="text" id="editYear" class="admin-input" value="${p.year}"></div></div><div class="grid-2"><div><label class="admin-label">Kategori</label><select id="editCategory" class="admin-input"><option value="main" ${p.category !== 'other' ? 'selected' : ''}>Main Projects</option><option value="other" ${p.category === 'other' ? 'selected' : ''}>Other Projects</option></select></div></div><label class="admin-label">Kısa Açıklama</label><input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}"><label class="admin-label">Detaylı Açıklama</label><textarea id="editFullDesc" class="admin-input admin-textarea" style="min-height:150px;">${p.fullDesc}</textarea><label class="admin-label">Thumbnail URL</label><input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}"><label class="admin-label">Screenshots (virgülle ayır)</label><input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}"><label class="admin-label">Videos (virgülle ayır)</label><input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}"><label class="admin-label">Teknolojiler (virgülle ayır)</label><input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}"><label class="admin-label">Platformlar (virgülle ayır)</label><input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}"><label class="admin-label">Download Link</label><input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}"><div class="flex gap-3 mt-4"><button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-success">💾 Kaydet</button><button onclick="document.getElementById('editProjectModal').remove()" class="admin-btn admin-btn-secondary">İptal</button></div></div>`; document.body.appendChild(modal); }
+        function editProject(index) { const p = siteData.projects[index]; const modal = document.createElement('div'); modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-[10001] p-4'; modal.id = 'editProjectModal'; modal.innerHTML = `<div class="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-700"><h3 class="text-xl font-bold text-white mb-4">✏️ Proje Düzenle</h3><div class="grid-2"><div><label class="admin-label">Başlık</label><input type="text" id="editTitle" class="admin-input" value="${p.title}"></div><div><label class="admin-label">Yıl</label><input type="text" id="editYear" class="admin-input" value="${p.year}"></div></div><div class="grid-2"><div><label class="admin-label">Kategori</label><select id="editCategory" class="admin-input"><option value="main" ${p.category !== 'other' ? 'selected' : ''}>Main Projects</option><option value="other" ${p.category === 'other' ? 'selected' : ''}>Other Projects</option></select></div></div><label class="admin-label">Kısa Açıklama</label><input type="text" id="editShortDesc" class="admin-input" value="${p.shortDesc}"><label class="admin-label">Detaylı Açıklama</label><textarea id="editFullDesc" class="admin-input admin-textarea" style="min-height:150px;">${p.fullDesc}</textarea><label class="admin-label">Thumbnail URL</label><input type="text" id="editThumbnail" class="admin-input" value="${p.thumbnail}"><label class="admin-label">Screenshots (virgülle ayır)</label><input type="text" id="editScreenshots" class="admin-input" value="${p.screenshots.join(', ')}"><label class="admin-label">Videos (virgülle ayır - dosya yolu veya YouTube linki)</label><input type="text" id="editVideos" class="admin-input" value="${p.videos.join(', ')}" placeholder="./assets/video.mp4, https://www.youtube.com/watch?v=VIDEO_ID"><label class="admin-label">Teknolojiler (virgülle ayır)</label><input type="text" id="editTech" class="admin-input" value="${p.technologies.join(', ')}"><label class="admin-label">Platformlar (virgülle ayır)</label><input type="text" id="editPlatforms" class="admin-input" value="${p.platforms.join(', ')}"><label class="admin-label">Download Link</label><input type="text" id="editDownload" class="admin-input" value="${p.downloadLink}"><div class="flex gap-3 mt-4"><button onclick="saveProjectEdit(${index})" class="admin-btn admin-btn-success">💾 Kaydet</button><button onclick="document.getElementById('editProjectModal').remove()" class="admin-btn admin-btn-secondary">İptal</button></div></div>`; document.body.appendChild(modal); }
         function saveProjectEdit(index) { siteData.projects[index] = { ...siteData.projects[index], title: document.getElementById('editTitle').value, shortDesc: document.getElementById('editShortDesc').value, fullDesc: document.getElementById('editFullDesc').value, thumbnail: document.getElementById('editThumbnail').value, screenshots: document.getElementById('editScreenshots').value.split(',').map(s => s.trim()).filter(s => s), videos: document.getElementById('editVideos').value.split(',').map(s => s.trim()).filter(s => s), technologies: document.getElementById('editTech').value.split(',').map(s => s.trim()).filter(s => s), platforms: document.getElementById('editPlatforms').value.split(',').map(s => s.trim()).filter(s => s), year: document.getElementById('editYear').value, downloadLink: document.getElementById('editDownload').value, category: document.getElementById('editCategory').value }; document.getElementById('editProjectModal').remove(); renderProjectsAdmin(); showToast('✅ Proje güncellendi!'); }
         function deleteProject(index) { if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) { siteData.projects.splice(index, 1); renderProjectsAdmin(); showToast('🗑️ Proje silindi!'); } }
 
@@ -1309,11 +1409,46 @@
         function openModal(id) {
             const project = siteData.projects.find(p => p.id === id);
             if (!project) return;
+            
+            // Generate video thumbnails
+            const videoThumbnails = (project.videos || []).map(v => {
+                const escapedUrl = v.replace(/'/g, "\\'");
+                if (isYouTubeUrl(v)) {
+                    const videoId = getYouTubeId(v);
+                    return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="showVideo('${escapedUrl}')">
+                        <img src="${getYouTubeThumbnail(videoId)}" alt="YouTube Video" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <span class="absolute bottom-1 right-1 text-xs text-white bg-red-600 px-1 rounded">YouTube</span>
+                    </div>`;
+                } else {
+                    // Local video - show first frame as thumbnail
+                    return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="showVideo('${escapedUrl}')">
+                        <video src="${v}" class="w-full h-full object-cover" muted preload="metadata" onloadeddata="this.currentTime=0.5"></video>
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <div class="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-black ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span>
+                    </div>`;
+                }
+            }).join('');
+            
+            // Generate screenshot thumbnails
+            const screenshotThumbnails = (project.screenshots || []).slice(0, 4 - (project.videos?.length || 0)).map(s => {
+                const escapedUrl = s.replace(/'/g, "\\'");
+                return `<img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer rounded" onclick="showImage('${escapedUrl}')" onerror="this.style.display='none'">`;
+            }).join('');
+            
             document.getElementById('modalContent').innerHTML = `
                 <div class="grid lg:grid-cols-2 gap-8">
                     <div>
                         <div id="mainMedia" class="w-full aspect-video mb-4 bg-black rounded-lg overflow-hidden"><img src="${project.thumbnail}" alt="${project.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x450?text=No+Image'"></div>
-                        ${(project.screenshots?.length || project.videos?.length) ? `<div class="grid grid-cols-4 gap-2">${project.videos?.map(v => `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 flex items-center justify-center rounded overflow-hidden" onclick="showVideo('${v}')"><svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span class="absolute bottom-1 right-1 text-xs text-white bg-black/70 px-1 rounded">VIDEO</span></div>`).join('') || ''}${project.screenshots?.slice(0, 4 - (project.videos?.length || 0)).map(s => `<img src="${s}" alt="Screenshot" class="w-full aspect-video object-cover cursor-pointer rounded" onclick="showImage('${s}')" onerror="this.style.display='none'">`).join('') || ''}</div>` : ''}
+                        ${(project.screenshots?.length || project.videos?.length) ? `<div class="grid grid-cols-4 gap-2">${videoThumbnails}${screenshotThumbnails}</div>` : ''}
                     </div>
                     <div>
                         <div class="flex items-center gap-4 mb-4"><h2 class="text-3xl font-bold text-main">${project.title}</h2><span class="text-sub">${project.year}</span></div>
@@ -1328,7 +1463,19 @@
         }
 
         function closeModal() { document.getElementById('projectModal').classList.add('hidden'); document.body.style.overflow = ''; }
-        function showVideo(url) { document.getElementById('mainMedia').innerHTML = `<video src="${url}" class="w-full h-full" controls autoplay></video>`; }
+        
+        function showVideo(url) { 
+            const mainMedia = document.getElementById('mainMedia');
+            if (isYouTubeUrl(url)) {
+                const videoId = getYouTubeId(url);
+                if (videoId) {
+                    mainMedia.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                }
+            } else {
+                mainMedia.innerHTML = `<video src="${url}" class="w-full h-full" controls autoplay></video>`;
+            }
+        }
+        
         function showImage(url) { document.getElementById('mainMedia').innerHTML = `<img src="${url}" alt="Screenshot" class="w-full h-full object-cover">`; }
 
         // Scroll Reveal - Simplified
