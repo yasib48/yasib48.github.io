@@ -898,10 +898,12 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
                     </div>`;
                 }
             }
-            // Local video - show first frame as thumbnail
-            return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="${onclick}">
-                <video src="${url}" class="w-full h-full object-cover" muted preload="metadata" onloadeddata="this.currentTime=0.5"></video>
-                <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+            // Local video - show static thumbnail with play button
+            return `<div class="relative w-full aspect-video cursor-pointer bg-gray-700 rounded overflow-hidden" onclick="${onclick}">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
                         <svg class="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     </div>
@@ -912,6 +914,16 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
 
         function isVideoUrl(url) {
             return url && (url.match(/\.(mp4|webm|ogg)$/i) || isYouTubeUrl(url));
+        }
+
+        // Fix asset paths for GitHub Pages
+        function fixAssetPath(path) {
+            if (!path) return path;
+            // Remove leading ./ if present
+            if (path.startsWith('./')) {
+                path = path.substring(2);
+            }
+            return path;
         }
 
         // ==================== EMBEDDED FIREBASE CONFIG ====================
@@ -1216,7 +1228,7 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
                 }
                 // Check for local videos
                 if (t.match(/\.(mp4|webm|ogg)$/i)) {
-                    return `<div class="devlog-inline-media my-3"><div class="relative inline-block cursor-pointer" onclick="openLightbox('${t}', 'video')"><video src="${t}" muted preload="metadata" onloadeddata="this.currentTime=0.5" class="rounded-lg border border-gray-600" style="max-width: 400px;"></video><div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg"><div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center"><svg class="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="absolute bottom-2 right-2 text-xs text-white bg-black/70 px-1.5 py-0.5 rounded">VIDEO</span></div></div>`;
+                    return `<div class="devlog-inline-media my-3"><div class="relative inline-block cursor-pointer" onclick="openLightbox('${t}', 'video')"><video src="${t}" muted playsinline preload="metadata" crossorigin="anonymous" onloadedmetadata="try{this.currentTime=0.1;}catch(e){}" onerror="this.poster='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22225%22><rect fill=%22%23374151%22 width=%22400%22 height=%22225%22/><text x=%22200%22 y=%22120%22 text-anchor=%22middle%22 fill=%22%239CA3AF%22 font-size=%2216%22>Video</text></svg>'" class="rounded-lg border border-gray-600" style="max-width: 400px; min-height: 200px; background: #374151;"></video><div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg pointer-events-none"><div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center"><svg class="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><span class="absolute bottom-2 right-2 text-xs text-white bg-black/70 px-1.5 py-0.5 rounded">VIDEO</span></div></div>`;
                 }
                 if (t) return `<p class="text-sub leading-relaxed mb-2">${t}</p>`;
                 return '<div class="h-2"></div>';
@@ -1377,9 +1389,10 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
         }
 
         function renderProjectCard(p) {
+            const thumb = fixAssetPath(p.thumbnail);
             return `
                 <div class="project-card cursor-pointer shadow-lg scroll-reveal rounded-lg" onclick="openModal(${p.id})">
-                    <div class="card-image aspect-video"><img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'"></div>
+                    <div class="card-image aspect-video"><img src="${thumb}" alt="${p.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x225?text=No+Image'"></div>
                     <div class="card-content p-6">
                         <div class="card-body">
                             <div class="flex justify-between items-start mb-2"><h3 class="text-xl font-bold text-main">${p.title}</h3><span class="text-sm text-sub">${p.year}</span></div>
@@ -1410,9 +1423,12 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
             const project = siteData.projects.find(p => p.id === id);
             if (!project) return;
             
+            const thumb = fixAssetPath(project.thumbnail);
+            
             // Generate video thumbnails
             const videoThumbnails = (project.videos || []).map(v => {
-                const escapedUrl = v.replace(/'/g, "\\'");
+                const fixedV = fixAssetPath(v);
+                const escapedUrl = fixedV.replace(/'/g, "\\'");
                 if (isYouTubeUrl(v)) {
                     const videoId = getYouTubeId(v);
                     return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="showVideo('${escapedUrl}')">
@@ -1425,10 +1441,12 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
                         <span class="absolute bottom-1 right-1 text-xs text-white bg-red-600 px-1 rounded">YouTube</span>
                     </div>`;
                 } else {
-                    // Local video - show first frame as thumbnail
-                    return `<div class="relative w-full aspect-video cursor-pointer bg-gray-800 rounded overflow-hidden" onclick="showVideo('${escapedUrl}')">
-                        <video src="${v}" class="w-full h-full object-cover" muted preload="metadata" onloadeddata="this.currentTime=0.5"></video>
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                    // Local video - show static thumbnail with play button
+                    return `<div class="relative w-full aspect-video cursor-pointer bg-gray-700 rounded overflow-hidden" onclick="showVideo('${escapedUrl}')">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div class="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-black ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </div>
@@ -1486,9 +1504,21 @@ https://www.youtube.com/watch?v=VIDEO_ID"></textarea>
             document.querySelectorAll('.scroll-reveal:not(.revealed)').forEach(el => observer.observe(el));
         }
 
+        // Debug helper - check console for errors on GitHub Pages
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo);
+            return false;
+        };
+
         // Init
-        initFirebase();
-        initScrollReveal();
+        try {
+            initFirebase();
+            initScrollReveal();
+        } catch(e) {
+            console.error('Init error:', e);
+            hideLoading();
+            applyAllData();
+        }
     </script>
 </body>
 </html>
